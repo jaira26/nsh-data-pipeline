@@ -9,6 +9,7 @@ import pandas as pd
 from nsh_pipeline.constants import EXCLUDED_ORG_IDS
 from nsh_pipeline.preprocess.dates import parse_dates
 from nsh_pipeline.preprocess.exclusions import drop_excluded, flag_excluded_orgs
+from nsh_pipeline.preprocess.money import normalize_money
 from nsh_pipeline.preprocess.people_current import current_entry
 from nsh_pipeline.preprocess.privacy import age_bands, assert_no_phi, drop_phi, mask_ssn
 from nsh_pipeline.utils.keys import make_nswid
@@ -126,3 +127,86 @@ def clean_members(people: list[dict], as_of, excluded_ids=EXCLUDED_ORG_IDS) -> p
     df = drop_phi(df)
     assert_no_phi(df, "members")
     return df[MEMBER_COLUMNS]
+
+# ---------------------------------------------------------------- swipes, claims, tickets
+SWIPE_COLUMNS = [
+    "swipe_id", "member_id", "client_id", "nswid", "service_date", "amount_usd", "paid_usd",
+    "denied_usd", "status", "service_category", "is_debit_card", "needs_substantiation",
+    "ticket_number",
+]
+CLAIM_COLUMNS = [
+    "claim_number", "member_id", "client_id", "service_category", "requested_usd",
+    "approved_usd", "denied_usd", "status", "escalation", "priority", "created_at", "closed_at",
+]
+TICKET_COLUMNS = [
+    "ticket_number", "member_id", "client_id", "type", "category", "status", "priority",
+    "is_vip", "created_at", "closed_at", "sla_breached",
+]
+
+SWIPE_MONEY_UNITS = {"amount": "string", "paid_amt": "string", "denied_amt": "string"}
+CLAIM_MONEY_UNITS = {"requestedAmount": "dollars", "amountApproved": "dollars", "amountDenied": "dollars"}
+TICKET_SLA_HOURS = 40  # contract A1.6; measured in wall-clock hours (NSH to confirm)
+
+
+def _frame(records: list[dict], fields: list[str]) -> pd.DataFrame:
+    """DataFrame of `records` with exactly `fields` as columns (fields missing everywhere become NaN)."""
+    return pd.DataFrame(records).reindex(columns=fields)
+
+
+def clean_swipes(wex_claims: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per debit-card swipe from `wex-claims`; money strings become dollars."""
+    df = _frame(wex_claims, [
+        "_id", "employeeId", "clientId", "nswid", "date_of_service", "amount", "paid_amt",
+        "denied_amt", "claim_status", "service_category", "claim_source_desc",
+        "needsSubstantion", "ticketNumber",
+    ])
+    df = drop_excluded(df, "clientId", excluded_ids)
+    df = normalize_money(df, SWIPE_MONEY_UNITS)
+    df = parse_dates(df, {"date_of_service": "iso"})
+    df["is_debit_card"] = df["claim_source_desc"].eq("Debit card")
+    df["needs_substantiation"] = df["needsSubstantion"].eq(True)  # (sic) field name in raw data
+    df = df.rename(columns={
+        "_id": "swipe_id", "employeeId": "member_id", "clientId": "client_id",
+        "date_of_service": "service_date", "paid_amt_usd": "paid_usd",
+        "denied_amt_usd": "denied_usd", "claim_status": "status", "ticketNumber": "ticket_number",
+    })
+    return df[SWIPE_COLUMNS]
+
+
+def clean_claims(claims: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per manual claim from `claims`; deleted claims are removed."""
+    df = _frame(claims, [
+        "claimNumber", "employeeId", "clientId", "serviceCategory", "requestedAmount",
+        "amountApproved", "amountDenied", "status", "escalation", "priority", "createdAt",
+        "closedAt", "deleted",
+    ])
+    df = df[~df["deleted"].eq(True)]
+    df = drop_excluded(df, "clientId", excluded_ids)
+    df = normalize_money(df, CLAIM_MONEY_UNITS)
+    df = parse_dates(df, {"createdAt": "iso", "closedAt": "iso"})
+    df = df.rename(columns={
+        "claimNumber": "claim_number", "employeeId": "member_id", "clientId": "client_id",
+        "serviceCategory": "service_category", "requestedAmount_usd": "requested_usd",
+        "amountApproved_usd": "approved_usd", "amountDenied_usd": "denied_usd",
+        "createdAt": "created_at", "closedAt": "closed_at",
+    })
+    return df[CLAIM_COLUMNS]
+
+
+def clean_tickets(tickets: list[dict], as_of, excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per support ticket; `sla_breached` if open or resolved longer than the SLA."""
+    as_of = _utc(as_of)
+    df = _frame(tickets, [
+        "ticketNumber", "employeeId", "clientId", "type", "category", "status", "priority",
+        "isVip", "createdAt", "closedAt",
+    ])
+    df = drop_excluded(df, "clientId", excluded_ids)
+    df = parse_dates(df, {"createdAt": "iso", "closedAt": "iso"})
+    df["is_vip"] = df["isVip"].eq(True)
+    end = df["closedAt"].fillna(as_of)
+    df["sla_breached"] = (end - df["createdAt"]) > pd.Timedelta(hours=TICKET_SLA_HOURS)
+    df = df.rename(columns={
+        "ticketNumber": "ticket_number", "employeeId": "member_id", "clientId": "client_id",
+        "createdAt": "created_at", "closedAt": "closed_at",
+    })
+    return df[TICKET_COLUMNS]
