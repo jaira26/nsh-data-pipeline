@@ -3,8 +3,10 @@ import pytest
 
 from nsh_pipeline.constants import NS_DEMO_ID, NSAI_ID
 from nsh_pipeline.preprocess.flatten import (
-    CLAIM_COLUMNS, CLIENT_COLUMNS, MEMBER_COLUMNS, SWIPE_COLUMNS, TICKET_COLUMNS,
-    clean_claims, clean_clients, clean_members, clean_swipes, clean_tickets,
+    BILL_LINE_COLUMNS, CLAIM_COLUMNS, CLIENT_COLUMNS, LEDGER_COLUMNS, MEMBER_BENEFIT_COLUMNS,
+    MEMBER_COLUMNS, RESERVE_COLUMNS, SWIPE_COLUMNS, TICKET_COLUMNS,
+    clean_bill_lines, clean_claims, clean_clients, clean_ledger, clean_member_benefits,
+    clean_members, clean_reserves, clean_swipes, clean_tickets,
 )
 
 AS_OF = pd.Timestamp("2025-06-15", tz="UTC")
@@ -203,3 +205,91 @@ def test_open_ticket_within_sla_is_not_breached():
 def test_excluded_org_tickets_are_dropped():
     raw = [{"ticketNumber": "NSET-9", "clientId": NSAI_ID, "createdAt": "2025-06-14T00:00:00Z"}]
     assert clean_tickets(raw, AS_OF).empty
+
+def test_non_medical_claims_are_dropped():
+    raw = [
+        {"claimNumber": "CLM-1", "clientId": "c1", "type": "Dental"},
+        {"claimNumber": "CLM-2", "clientId": "c1", "type": "Medical"},
+    ]
+    assert clean_claims(raw)["claim_number"].tolist() == ["CLM-2"]
+
+
+# ---------------------------------------------------------------- member benefits
+def test_member_benefits_columns_and_values(sample_raw):
+    out = clean_member_benefits(sample_raw["people"])
+    assert list(out.columns) == MEMBER_BENEFIT_COLUMNS
+    assert len(out) == 4  # one medical plan each for the 4 real members
+    jane = out.set_index("member_id").loc["b00000000000000000000001"]
+    assert jane["coverage_tier"] == "ES"
+    assert jane["premium_usd"] == pytest.approx(650.0)
+    assert jane["effective_date"] == pd.Timestamp("2025-01-01", tz="UTC")
+    assert out["is_cobra"].sum() == 1  # Maria Garcia
+
+
+def test_deleted_benefits_are_skipped():
+    person = {"_id": "m1", "Application": ACME, "Benefits": [
+        {"Type": "Medical", "CoverageName": "Old", "Deleted": True},
+        {"Type": "Medical", "CoverageName": "New", "Deleted": False},
+    ]}
+    assert clean_member_benefits([person])["plan_name"].tolist() == ["New"]
+
+
+# ---------------------------------------------------------------- bill lines
+def test_bill_lines_columns_and_money_strings(sample_raw):
+    out = clean_bill_lines(sample_raw["bills"])
+    assert list(out.columns) == BILL_LINE_COLUMNS
+    assert len(out) == 4  # 3 Acme lines + 1 Birch line
+    assert (out["billing_month"] == pd.Timestamp("2025-01-01", tz="UTC")).all()
+    birch = out[out["client_id"] == "a00000000000000000000002"].iloc[0]
+    assert birch["premium_usd"] == pytest.approx(1100.0)   # raw "1,100.00"
+    assert birch["admin_fee_usd"] == pytest.approx(35.0)   # raw "$35.00"
+    assert birch["member_count"] == 1
+
+
+def test_non_medical_bill_lines_are_dropped():
+    bill = {"appId": ACME, "billingDate": "2025-02", "recurring": [
+        {"employeeId": "m1", "premium": "10.00", "type": "dental"},
+        {"employeeId": "m2", "premium": "20.00", "type": "medical"},
+    ]}
+    assert clean_bill_lines([bill])["member_id"].tolist() == ["m2"]
+
+
+# ---------------------------------------------------------------- reserves
+def test_reserves_columns_and_values(sample_raw):
+    out = clean_reserves(sample_raw["reserves"])
+    assert list(out.columns) == RESERVE_COLUMNS
+    acme = out.set_index("client_id").loc[ACME]
+    assert acme["month"] == pd.Timestamp("2025-01-01", tz="UTC")
+    assert acme["balance_usd"] == pytest.approx(15630.0)
+    assert acme["reserves_billed_usd"] == pytest.approx(630.0)
+
+
+def test_non_medical_and_excluded_reserves_are_dropped():
+    raw = [
+        {"client": ACME, "year": 2025, "month": 2, "type": "Medical", "balance": 1.0},
+        {"client": ACME, "year": 2025, "month": 2, "type": "Dental", "balance": 2.0},
+        {"client": NS_DEMO_ID, "year": 2025, "month": 2, "type": "Medical", "balance": 3.0},
+    ]
+    out = clean_reserves(raw)
+    assert out["balance_usd"].tolist() == [1.0]
+    assert out.loc[0, "month"] == pd.Timestamp("2025-02-01", tz="UTC")
+
+
+# ---------------------------------------------------------------- ledger
+def test_ledger_cents_and_client_lookup(sample_raw, clients):
+    out = clean_ledger(sample_raw["nse_transaction_daily_logs"], clients)
+    assert list(out.columns) == LEDGER_COLUMNS
+    assert out["amount_usd"].tolist() == pytest.approx([125.0, 1250.75, 45.10, 300.0])
+    assert (out["client_id"] == ACME).all()  # looked up from employerCode ACMEWEX01
+    assert out["source"].tolist() == ["wex", "wex", "wex", "manual"]
+
+
+def test_ledger_drops_demo_and_keeps_unknown_codes(clients):
+    raw = [
+        {"_id": "t1", "employerCode": "NSDEMO", "amount": 100},
+        {"_id": "t2", "employerCode": "UNKNOWN", "amount": 250},
+    ]
+    out = clean_ledger(raw, clients)
+    assert out["txn_id"].tolist() == ["t2"]
+    assert pd.isna(out.loc[0, "client_id"])  # orphan left for validation to flag
+    assert out.loc[0, "amount_usd"] == pytest.approx(2.5)
