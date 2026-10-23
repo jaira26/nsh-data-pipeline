@@ -1,0 +1,12 @@
+# Pipeline parameters, shared by the generator, preprocessing, Airflow and DVC.
+seed: 42
+scale: small                   # small | full
+reference_date: "2025-06-15"   # "as of" date for generated data and preprocessing
+
+scales:
+  small:                       # fast: CI, tests, grading
+    clients: 60
+    max_members_per_client: 150
+  full:                        # realistic size (~605 active clients in the real book)
+    clients: 605
+    max_members_per_client: 1000
