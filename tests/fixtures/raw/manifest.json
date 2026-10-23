@@ -1,0 +1,42 @@
+{
+  "dataset": "sample-fixture",
+  "version": "1",
+  "files": {
+    "applications.jsonl": {
+      "rows": 5,
+      "sha256": "0058c16d99abac4c6f5c64c38b4d4f8f3371921a2505057428c22f2eedfc6d39"
+    },
+    "people.jsonl": {
+      "rows": 6,
+      "sha256": "bc672098d27b264c9ea308c534186ee171d6ae33691e253c169fdea337702a4c"
+    },
+    "debit_card_status.jsonl": {
+      "rows": 4,
+      "sha256": "cb08fa6bad37955cb367b32d250219f1a853f2b0aa80e23b3a90b661ae5d32fe"
+    },
+    "wex_claims.jsonl": {
+      "rows": 6,
+      "sha256": "912e104a38a0d24408b4b01556d584473409a177b86475aa39c09c10455ee2ed"
+    },
+    "tickets.jsonl": {
+      "rows": 2,
+      "sha256": "c0e71c5a516aa9172a709846c4370730d6287eb5d03473e6ca63a2a875ee86b4"
+    },
+    "claims.jsonl": {
+      "rows": 2,
+      "sha256": "4ab2379842445c421847c1b11b590a1b7fb69a751b1e55fc452fcbce68f81f11"
+    },
+    "bills.jsonl": {
+      "rows": 2,
+      "sha256": "b232909b886e2de00ef5165bf617c348468d45b5b6c42a9838df44c5a91e555b"
+    },
+    "reserves.jsonl": {
+      "rows": 2,
+      "sha256": "779f7f798b20548e704117465516e9e6175722a7bae4d9e405fb6914eb18b708"
+    },
+    "nse_transaction_daily_logs.jsonl": {
+      "rows": 4,
+      "sha256": "897a08f9a5aa2773e26436f49cd58e01bbe4a9b0078686675a8cb32ee08a3c8a"
+    }
+  }
+}
