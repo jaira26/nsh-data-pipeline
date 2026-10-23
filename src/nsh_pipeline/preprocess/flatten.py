@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from nsh_pipeline.constants import EXCLUDED_ORG_IDS
-from nsh_pipeline.preprocess.dates import parse_dates
+from nsh_pipeline.preprocess.dates import parse_dates, to_utc
 from nsh_pipeline.preprocess.exclusions import drop_excluded, flag_excluded_orgs
 from nsh_pipeline.preprocess.money import normalize_money
 from nsh_pipeline.preprocess.people_current import current_entry
@@ -128,6 +128,7 @@ def clean_members(people: list[dict], as_of, excluded_ids=EXCLUDED_ORG_IDS) -> p
     assert_no_phi(df, "members")
     return df[MEMBER_COLUMNS]
 
+
 # ---------------------------------------------------------------- swipes, claims, tickets
 SWIPE_COLUMNS = [
     "swipe_id", "member_id", "client_id", "nswid", "service_date", "amount_usd", "paid_usd",
@@ -174,13 +175,14 @@ def clean_swipes(wex_claims: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.Da
 
 
 def clean_claims(claims: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
-    """One row per manual claim from `claims`; deleted claims are removed."""
+    """One row per manual medical claim from `claims`; deleted claims are removed."""
     df = _frame(claims, [
         "claimNumber", "employeeId", "clientId", "serviceCategory", "requestedAmount",
         "amountApproved", "amountDenied", "status", "escalation", "priority", "createdAt",
-        "closedAt", "deleted",
+        "closedAt", "deleted", "type",
     ])
     df = df[~df["deleted"].eq(True)]
+    df = df[_is_medical(df["type"])]
     df = drop_excluded(df, "clientId", excluded_ids)
     df = normalize_money(df, CLAIM_MONEY_UNITS)
     df = parse_dates(df, {"createdAt": "iso", "closedAt": "iso"})
@@ -210,3 +212,141 @@ def clean_tickets(tickets: list[dict], as_of, excluded_ids=EXCLUDED_ORG_IDS) -> 
         "createdAt": "created_at", "closedAt": "closed_at",
     })
     return df[TICKET_COLUMNS]
+
+
+# ---------------------------------------------------------------- benefits, billing, reserves, ledger
+MEMBER_BENEFIT_COLUMNS = [
+    "member_id", "client_id", "benefit_type", "carrier", "plan_name", "coverage_tier",
+    "effective_date", "term_date", "is_cobra", "premium_usd",
+]
+BILL_LINE_COLUMNS = [
+    "client_id", "billing_month", "member_id", "plan_name", "carrier", "premium_usd",
+    "admin_fee_usd", "reserve_charge_usd", "broker_fee_usd", "member_count",
+]
+RESERVE_COLUMNS = [
+    "client_id", "month", "balance_usd", "reserves_billed_usd", "claims_paid_usd",
+    "return_of_reserve_usd",
+]
+LEDGER_COLUMNS = [
+    "txn_id", "client_id", "member_id", "source", "amount_usd", "effective_date", "status",
+]
+
+MEMBER_BENEFIT_MONEY_UNITS = {"premium": "dollars"}  # people.Benefits[].Premium (NSH to confirm unit)
+BILL_LINE_MONEY_UNITS = {
+    "premium": "string", "adminFee": "string", "reserveCharge": "string", "brokerFees": "string",
+}
+RESERVE_MONEY_UNITS = {
+    "balance": "dollars", "reservesBilled": "dollars", "claimsPaid": "dollars",
+    "returnOfReserve": "dollars",
+}
+LEDGER_MONEY_UNITS = {"amount": "cents"}
+
+
+def _is_medical(benefit_type: pd.Series) -> pd.Series:
+    """True where the type is Medical (any casing) or missing (contract A0 rule 6)."""
+    return benefit_type.isna() | benefit_type.astype(str).str.lower().eq("medical")
+
+
+def clean_member_benefits(people: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per non-deleted benefit enrollment in `people.Benefits[]`."""
+    rows = []
+    for person in people:
+        for benefit in person.get("Benefits") or []:
+            if not isinstance(benefit, dict) or benefit.get("Deleted"):
+                continue
+            rows.append({
+                "member_id": person.get("_id"),
+                "client_id": person.get("Application"),
+                "benefit_type": benefit.get("Type"),
+                "carrier": benefit.get("Carrier"),
+                "plan_name": benefit.get("CoverageName"),
+                "coverage_tier": benefit.get("CoverageTier"),
+                "effective_date": benefit.get("CurrentEffectiveDate"),
+                "term_date": benefit.get("TerminationDate"),
+                "is_cobra": bool(benefit.get("IsCobra", False)),
+                "premium": benefit.get("Premium"),
+            })
+    df = _frame(rows, MEMBER_BENEFIT_COLUMNS[:-1] + ["premium"])
+    df = drop_excluded(df, "client_id", excluded_ids)
+    df = parse_dates(df, {"effective_date": "iso", "term_date": "iso"})
+    df = normalize_money(df, MEMBER_BENEFIT_MONEY_UNITS)
+    return df[MEMBER_BENEFIT_COLUMNS]
+
+
+def clean_bill_lines(bills: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per member line in `bills.recurring[]` (medical only); money strings become dollars.
+
+    Duplicate lines are NOT removed here: detecting PMPM double-counting is validation's job.
+    """
+    rows = []
+    for bill in bills:
+        for line in bill.get("recurring") or []:
+            if not isinstance(line, dict):
+                continue
+            rows.append({
+                "client_id": bill.get("appId"),
+                "billing_month": bill.get("billingDate"),
+                "member_id": line.get("employeeId"),
+                "plan_name": line.get("planName"),
+                "carrier": line.get("carrier"),
+                "premium": line.get("premium"),
+                "adminFee": line.get("adminFee"),
+                "reserveCharge": line.get("reserveCharge"),
+                "brokerFees": line.get("brokerFees"),
+                "memberCount": line.get("memberCount"),
+                "type": line.get("type"),
+            })
+    df = _frame(rows, [
+        "client_id", "billing_month", "member_id", "plan_name", "carrier", "premium",
+        "adminFee", "reserveCharge", "brokerFees", "memberCount", "type",
+    ])
+    df = df[_is_medical(df["type"])]
+    df = drop_excluded(df, "client_id", excluded_ids)
+    df = normalize_money(df, BILL_LINE_MONEY_UNITS)
+    df = parse_dates(df, {"billing_month": "ym"})
+    df["member_count"] = pd.to_numeric(df["memberCount"], errors="coerce")
+    df = df.rename(columns={
+        "adminFee_usd": "admin_fee_usd", "reserveCharge_usd": "reserve_charge_usd",
+        "brokerFees_usd": "broker_fee_usd",
+    })
+    return df[BILL_LINE_COLUMNS]
+
+
+def clean_reserves(reserves: list[dict], excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per client per month of medical reserves; year + month become one month date."""
+    df = _frame(reserves, [
+        "client", "year", "month", "type", "balance", "reservesBilled", "claimsPaid",
+        "returnOfReserve",
+    ])
+    df = df[_is_medical(df["type"])]
+    df = drop_excluded(df, "client", excluded_ids)
+    df = normalize_money(df, RESERVE_MONEY_UNITS)
+    year = pd.to_numeric(df["year"], errors="coerce").astype("Int64").astype(str)
+    month = pd.to_numeric(df["month"], errors="coerce").astype("Int64").astype(str).str.zfill(2)
+    df["month"] = to_utc(year + "-" + month, "ym")
+    df = df.rename(columns={
+        "client": "client_id", "reservesBilled_usd": "reserves_billed_usd",
+        "claimsPaid_usd": "claims_paid_usd", "returnOfReserve_usd": "return_of_reserve_usd",
+    })
+    return df[RESERVE_COLUMNS]
+
+
+def clean_ledger(logs: list[dict], clients: pd.DataFrame, excluded_ids=EXCLUDED_ORG_IDS) -> pd.DataFrame:
+    """One row per NSE ledger transaction; cents become dollars.
+
+    The ledger has no client id, so `client_id` is looked up from `employerCode` using the
+    cleaned `clients` table. Unknown codes keep a missing client_id (an orphan for validation).
+    """
+    df = _frame(logs, [
+        "_id", "employerCode", "employeeId", "nseSource", "amount", "effectiveDate", "status",
+    ])
+    codes = clients.dropna(subset=["employer_code"]).drop_duplicates("employer_code")
+    df["client_id"] = df["employerCode"].map(codes.set_index("employer_code")["client_id"])
+    df = drop_excluded(df, "client_id", excluded_ids)
+    df = normalize_money(df, LEDGER_MONEY_UNITS)
+    df = parse_dates(df, {"effectiveDate": "iso"})
+    df = df.rename(columns={
+        "_id": "txn_id", "employeeId": "member_id", "nseSource": "source",
+        "effectiveDate": "effective_date",
+    })
+    return df[LEDGER_COLUMNS]
