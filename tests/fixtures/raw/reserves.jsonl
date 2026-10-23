@@ -1,0 +1,2 @@
+{"_id": "f10000000000000000000001", "balance": 15630.0, "bill": "f00000000000000000000001", "claimsPaid": 0.0, "client": "a00000000000000000000001", "closed": true, "month": 1, "previousBalance": 15000.0, "reservesBilled": 630.0, "returnOfReserve": 0.0, "type": "Medical", "year": 2025}
+{"_id": "f10000000000000000000002", "balance": 4210.0, "bill": "f00000000000000000000002", "claimsPaid": 0.0, "client": "a00000000000000000000002", "closed": true, "month": 1, "previousBalance": 4000.0, "reservesBilled": 210.0, "returnOfReserve": 0.0, "type": "Medical", "year": 2025}
