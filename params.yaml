@@ -25,3 +25,10 @@ inject_issues:
   denial_skew:
     state: "CA"
     rate: 0.30
+
+
+# Where data acquisition downloads the raw dataset from (a GitHub Release asset).
+# Leave url empty to generate the data locally from the seed instead.
+dataset:
+  url: ""
+  sha256: ""
