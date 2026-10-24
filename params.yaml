@@ -10,3 +10,18 @@ scales:
   full:                        # realistic size (~605 active clients in the real book)
     clients: 605
     max_members_per_client: 1000
+
+# Known data problems for validation (M3) and bias analysis (M5) to detect.
+# Off by default; set enabled: true to generate a dataset with them.
+# Every injected record is listed in manifest.json under "injected_issues".
+inject_issues:
+  enabled: false
+  duplicate_bill_lines: 5
+  cents_as_dollars: 5
+  orphan_swipes: 5
+  unparseable_money: 5
+  future_service_dates: 3
+  status_casing_drift: 5
+  denial_skew:
+    state: "CA"
+    rate: 0.30

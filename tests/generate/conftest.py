@@ -13,7 +13,8 @@ def make_test_params(seed=42, clients=20, max_members=30) -> dict:
 
 
 def build_world(seed=42) -> dict[str, list[dict]]:
-    return build_collections(make_test_params(seed))
+    """Generated collections only; build_collections also returns the injected-issues list."""
+    return build_collections(make_test_params(seed))[0]
 
 
 @pytest.fixture(scope="module")
