@@ -159,6 +159,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Pipeline data outputs: versioned by DVC, never by git (bias weights from M5)
+data/bias/
+
 # Spyder project settings
 .spyderproject
 .spyproject
