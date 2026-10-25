@@ -16,4 +16,5 @@ pytest --cov=nsh_pipeline
 
 - [Data acquisition & synthetic data generation](docs/data_acquisition.md): download stage, generator, `params.yaml`, injected issues
 - [Preprocessing](docs/preprocessing.md): cleaning steps and the 9 processed tables
+- [Bias detection & mitigation](docs/bias.md): data slicing, flag rules, reweighing, evidence on clean and injected data
 - [Decisions & assumptions](docs/decisions.md)
