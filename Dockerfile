@@ -18,7 +18,7 @@ COPY --chown=airflow:root src /opt/airflow/project/src
 RUN pip install --no-cache-dir \
       "apache-airflow==${AIRFLOW_VERSION}" \
       -e /opt/airflow/project \
-      "dvc[gs]>=3.50,<4"
+      "dvc[gs]>=3.67.1,<4"
 
 # The repo is mounted with your host user's ownership; let git/DVC operate on it.
 RUN git config --global --add safe.directory '*'
