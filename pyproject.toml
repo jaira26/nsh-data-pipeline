@@ -18,3 +18,13 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+# PEP 8 checks for CI (`ruff check .`). W292 (newline at end of file) is off because
+# most existing files were saved without one; it is cosmetic.
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F"]
+ignore = ["W292"]
