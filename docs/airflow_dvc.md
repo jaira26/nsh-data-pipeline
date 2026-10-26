@@ -3,14 +3,15 @@
 ## What runs
 
 ```
-acquire_data → preprocess → validate_processed → build_features → ┬ stats     ┬ → dvc_version → run_summary
-                                                                  ├ anomalies ┤
-                                                                  └ bias      ┘
+acquire_data → validate_raw → preprocess → validate_processed → build_features → ┬ stats     ┬ → dvc_version → run_summary
+                                                                                 ├ anomalies ┤
+                                                                                 └ bias      ┘
 ```
 
 | Task | Calls | Owner |
 |---|---|---|
 | `acquire_data` | `acquire_data(params, data/raw)`; XCom = `"download"` or `"generated"` | M1 |
+| `validate_raw` | `python -m nsh_pipeline.validation.run ... --step raw` (files vs manifest, raw schemas) | M3 |
 | `preprocess` | `run_preprocess(data/raw, data/processed, reference_date)`; XCom = row counts | M2 |
 | `validate_processed` | `python -m nsh_pipeline.validation.run ... --step schema` | M3 |
 | `build_features` | `python -m nsh_pipeline.features.run ...` | FE |

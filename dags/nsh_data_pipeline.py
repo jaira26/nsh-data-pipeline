@@ -1,7 +1,7 @@
 """
 ### NSH data pipeline
 
-acquire_data -> preprocess -> validate_processed -> build_features
+acquire_data -> validate_raw -> preprocess -> validate_processed -> build_features
     -> [stats | anomalies | bias] -> dvc_version -> run_summary
 
 * `acquire_data` and `preprocess` call M1/M2's functions directly (row counts go to XCom).
@@ -109,6 +109,9 @@ with DAG(
     acquire_task = PythonOperator(
         task_id="acquire_data", python_callable=acquire, retries=2, retry_delay=timedelta(minutes=1)
     )
+    validate_raw_task = PythonOperator(
+        task_id="validate_raw", python_callable=run_stage, op_kwargs={"task_id": "validate_raw"}
+    )
     preprocess_task = PythonOperator(task_id="preprocess", python_callable=preprocess)
     validate_task = PythonOperator(
         task_id="validate_processed", python_callable=run_stage, op_kwargs={"task_id": "validate_processed"}
@@ -123,7 +126,7 @@ with DAG(
     dvc_task = PythonOperator(task_id="dvc_version", python_callable=version_data)
     summary_task = PythonOperator(task_id="run_summary", python_callable=summarize)
 
-    acquire_task >> preprocess_task >> validate_task >> features_task
+    acquire_task >> validate_raw_task >> preprocess_task >> validate_task >> features_task
     if PARALLEL_REPORTS:
         features_task >> report_tasks >> dvc_task
     else:
