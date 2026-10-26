@@ -1,0 +1,11 @@
+# Only pyproject.toml and src/ are copied into the image; keep the build context small.
+.git
+.venv
+venv
+data
+reports
+logs
+.dvc/cache
+**/__pycache__
+.pytest_cache
+.env

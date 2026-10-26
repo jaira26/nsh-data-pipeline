@@ -1,0 +1,66 @@
+schema: '2.0'
+stages:
+  acquire:
+    cmd: python -m nsh_pipeline.acquire.download --params params.yaml --out-dir 
+      data/raw
+    deps:
+    - path: src/nsh_pipeline/acquire
+      hash: md5
+      md5: e3fc0eee63e7a54512ee4839d92fed9f.dir
+      size: 27859
+      nfiles: 8
+    - path: src/nsh_pipeline/generate
+      hash: md5
+      md5: 6aa8922086c08bf1e61b87e15a2fbe38.dir
+      size: 163156
+      nfiles: 27
+    params:
+      params.yaml:
+        dataset:
+          url: 
+            https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.0/nsh-raw-small-v1.0.tar.gz
+          sha256: 
+            e6871efbf48dd262990f4dbd417ee992a033d0aef0afab62fdea0fb8670fc69f
+        inject_issues:
+          enabled: false
+          duplicate_bill_lines: 5
+          cents_as_dollars: 5
+          orphan_swipes: 5
+          unparseable_money: 5
+          future_service_dates: 3
+          status_casing_drift: 5
+          denial_skew:
+            state: CA
+            rate: 0.3
+        reference_date: '2025-06-15'
+        scale: small
+        seed: 42
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
+      size: 7813015
+      nfiles: 10
+  preprocess:
+    cmd: python -m nsh_pipeline.preprocess.run --raw-dir data/raw --out-dir 
+      data/processed --as-of 2025-06-15
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
+      size: 7813015
+      nfiles: 10
+    - path: src/nsh_pipeline/preprocess
+      hash: md5
+      md5: d935cdffebf1a883d3736a651d52940f.dir
+      size: 110863
+      nfiles: 24
+    params:
+      params.yaml:
+        reference_date: '2025-06-15'
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: c296a81d12359267ca16027d7d53bf2e.dir
+      size: 387262
+      nfiles: 9

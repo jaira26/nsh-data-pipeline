@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# --- add to the repo's .gitignore (M4) ---
+.env
+logs/
+reports/run_summary.json
+.dvc/cache
+.dvc/tmp
+.DS_Store

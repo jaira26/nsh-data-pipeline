@@ -6,7 +6,7 @@ requires-python = ">=3.11"
 dependencies = ["pandas", "numpy", "pyarrow", "pyyaml", "faker==40.43.0"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov"]
+dev = ["pytest", "pytest-cov", "dvc[gs]==3.67.1"]
 
 [build-system]
 requires = ["setuptools>=68"]
