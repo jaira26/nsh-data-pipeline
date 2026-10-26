@@ -5,8 +5,8 @@
 python -m nsh_pipeline.validation.run --step all          # raw, schema, stats, anomalies (after preprocessing)
 pytest tests/validation tests/utils/test_alerts.py         # tests only, no data or network needed
 ```
-On the default clean dataset the result is **0 critical, 1 warning**. The warning is a real
-generator bug, explained under [Clean run](#clean-run-0-critical-1-warning).
+On the default clean dataset the result is **0 critical; 1 warning check (5 records)**. The warning is a real
+generator bug, explained under [Clean run](#clean-run-0-critical-1-warning-check-5-records).
 
 ## Where it runs
 | Runner | What it calls |
@@ -123,12 +123,12 @@ not tuned to the injected data:
 | row count | 10% | same-seed reruns are byte-identical, so any change is real; 10% is where a volume change matters for PMPM denominators |
 | columns or tables added/removed, column kind changed | always | schema drift |
 
-## Clean run: 0 critical, 1 warning
+## Clean run: 0 critical; 1 warning check (5 records)
 | Step | Result |
 |---|---|
 | raw | passed (9 files match the manifest) |
 | schema | 9/9 processed tables passed; features skipped |
-| anomalies | **0 critical, 1 warning**: `future_dates` flags 5 claims |
+| anomalies | **0 critical; 1 warning check (5 records)**: `future_dates` flags 5 claims |
 | drift | `ok`, Denied share 5.38% = baseline |
 
 **The warning is a generator bug, not a validation false alarm.** In `make_claims`
@@ -186,7 +186,7 @@ threshold, so it is not flagged; the Denied share is the signal designed to catc
 ## Pipeline integration (Airflow and DVC)
 Checked on a scratch merge of `main` + this branch + `feat/orchestration-validate-raw` (2026-10-25):
 
-* **`dvc repro`**: all three stages (`acquire`, `preprocess`, `validate`) ran; `validate` gave 0 critical, 1 warning,
+* **`dvc repro`**: all three stages (`acquire`, `preprocess`, `validate`) ran; `validate` gave 0 critical; 1 warning check (5 records),
   raw passed, drift `ok`, and `dvc.lock` recorded its outputs.
 * **Airflow (Docker, `nsh-airflow:2.10.5`: pandas 2.1.4, pyarrow 16.1, pandera 0.34.1)**, clean data: all 10 tasks
   `success`. `validate_raw`, `validate_processed`, `stats` and `anomalies` ran M3's code (stage status `ok`), and

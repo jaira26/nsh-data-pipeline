@@ -38,7 +38,7 @@ Validation runs after preprocessing (Airflow tasks `validate_processed`, `stats`
 - **Alerts** by Slack webhook or SMTP from `.env`; with no credentials they are logged. `validation.mode: strict`
   fails the task on a critical finding; `report` only reports.
 
-**Clean data: 0 critical, 1 warning.** The warning is 5 claims created after the as-of date, a generator bug in
+**Clean data: 0 critical; 1 warning check (5 records).** The warning is 5 claims created after the as-of date, a generator bug in
 `generate/activity.py:143-144` (claim dates are not capped at the reference date). **Injected data**
 (`params.injected.yaml`): every injected issue in scope is detected (5/5 duplicate bill lines, 5/5 cents-as-dollars,
 5/5 orphans, 5/5 unparseable money, 3/3 future dates, 5/5 casing drift), with none missed. The denial skew is caught
