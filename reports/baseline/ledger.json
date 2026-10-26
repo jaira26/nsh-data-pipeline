@@ -1,0 +1,74 @@
+{
+  "table": "ledger",
+  "row_count": 4404,
+  "columns": {
+    "txn_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 4404
+    },
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 60
+    },
+    "member_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1178
+    },
+    "source": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 2,
+      "top": [
+        {
+          "value": "wex",
+          "count": 4347,
+          "share": 0.987057
+        },
+        {
+          "value": "manual",
+          "count": 57,
+          "share": 0.012943
+        }
+      ],
+      "top_complete": true
+    },
+    "amount_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 2.5,
+      "max": 5000.0,
+      "mean": 125.150054,
+      "std": 181.010019,
+      "median": 72.87
+    },
+    "effective_date": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2025-01-03T00:00:00+00:00",
+      "max": "2025-06-17T00:00:00+00:00"
+    },
+    "status": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1,
+      "top": [
+        {
+          "value": "processed",
+          "count": 4404,
+          "share": 1.0
+        }
+      ],
+      "top_complete": true
+    }
+  }
+}
