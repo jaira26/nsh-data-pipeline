@@ -228,3 +228,4 @@ reports/run_summary.json
 
 # Injected-issue datasets for the M3/M5 detection evidence (params.injected.yaml); regenerate, never commit
 data/*_injected/
+reports/injected/

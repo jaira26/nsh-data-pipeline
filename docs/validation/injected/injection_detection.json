@@ -1,0 +1,80 @@
+{
+  "dataset": "nsh-synthetic",
+  "seed": 42,
+  "all_in_scope_detected": true,
+  "issues": [
+    {
+      "issue": "denial_skew",
+      "collection": "wex_claims",
+      "injected_count": 219,
+      "status": "out_of_scope",
+      "handled_by": "bias slicing (M5): reports/bias_report.md"
+    },
+    {
+      "issue": "duplicate_bill_lines",
+      "collection": "bills",
+      "injected_count": 5,
+      "check": "duplicate_bill_lines",
+      "status": "detected",
+      "detected_count": 5,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    },
+    {
+      "issue": "cents_as_dollars",
+      "collection": "wex_claims",
+      "injected_count": 5,
+      "check": "money_unit_error",
+      "status": "detected",
+      "detected_count": 5,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    },
+    {
+      "issue": "orphan_swipes",
+      "collection": "wex_claims",
+      "injected_count": 5,
+      "check": "orphan_keys",
+      "status": "detected",
+      "detected_count": 5,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    },
+    {
+      "issue": "unparseable_money",
+      "collection": "wex_claims",
+      "injected_count": 5,
+      "check": "unparseable_money",
+      "status": "detected",
+      "detected_count": 5,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    },
+    {
+      "issue": "future_service_dates",
+      "collection": "wex_claims",
+      "injected_count": 3,
+      "check": "future_dates",
+      "status": "detected",
+      "detected_count": 3,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    },
+    {
+      "issue": "status_casing_drift",
+      "collection": "tickets",
+      "injected_count": 5,
+      "check": "enum_violations",
+      "status": "detected",
+      "detected_count": 5,
+      "missed_ids": [],
+      "other_flagged_in_table": 0,
+      "other_flagged_sample": []
+    }
+  ]
+}
