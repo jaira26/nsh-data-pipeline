@@ -50,4 +50,4 @@ def test_timeout_raises(tmp_path, monkeypatch):
 
 def test_jsonable_converts_numpy_and_paths():
     value = {"swipes": np.int64(4800), "nested": [np.float64(1.5), Path("data/raw")]}
-    assert runner.jsonable(value) == {"swipes": 4800, "nested": [1.5, "data/raw"]}
+    assert runner.jsonable(value) == {"swipes": 4800, "nested": [1.5, str(Path("data/raw"))]}
