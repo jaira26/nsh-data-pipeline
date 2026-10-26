@@ -20,6 +20,7 @@ validation.mode = report: everything is written and alerted, exit code 0.
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,8 +51,26 @@ def _read_manifest(raw_dir) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
-def _alert(title: str, lines: list[str], details: dict | None = None) -> None:
-    send_alert(f"NSH validation: {title}", "\n".join(lines), details)
+def under_airflow() -> bool:
+    """True inside an Airflow task (Airflow exports AIRFLOW_CTX_* to the task and its subprocesses)."""
+    return bool(os.environ.get("AIRFLOW_CTX_DAG_ID"))
+
+
+def _fail(mode: str, title: str, lines: list[str], details: dict | None = None) -> None:
+    """Alert about a failed step, then apply validation.mode (strict raises ValidationFailed).
+
+    Under Airflow in strict mode the task fails, and the DAG's on_failure_callback
+    (orchestration/summary.notify_failure) alerts with the exception text, which ends with
+    this stage's last output lines. So M3 does not alert as well: it raises a message carrying
+    the same details, logged as the stage's last output. Everywhere else (CLI, dvc repro, and
+    report mode, where no task fails) M3 sends the alert itself.
+    """
+    detail_lines = [f"  {key}: {value}" for key, value in (details or {}).items()]
+    if mode == "strict" and under_airflow():
+        logger.info("Running under Airflow: the task's failure callback sends the alert")
+    else:
+        send_alert(f"NSH validation: {title}", "\n".join(lines), details)
+    enforce_mode(mode, True, "\n".join([title, *lines, *detail_lines]))
 
 
 # ---------------------------------------------------------------- steps
@@ -73,10 +92,9 @@ def run_raw(raw_dir, params: dict, report_dir="reports") -> dict:
               "files": file_errors, "tables": tables}
     write_json(result, Path(report_dir) / "validation" / "raw_schema.json")
     if failed:
-        _alert("raw data failed validation", [f"Raw dir: {raw_dir}",
-               f"File problems: {len(file_errors)}", f"Failed tables: {failed_tables(tables)}"])
-    enforce_mode(settings["mode"], failed,
-                 f"Raw validation failed: {len(file_errors)} file problems, tables {failed_tables(tables)}")
+        _fail(settings["mode"], "raw data failed validation",
+              [f"Raw dir: {raw_dir}", f"File problems: {file_errors[:5]}", f"Failed tables: {failed_tables(tables)}"],
+              {t["table"]: t["errors"][:3] for t in tables if t["status"] == "failed"})
     return result
 
 
@@ -108,9 +126,9 @@ def run_schema(processed_dir, params: dict, report_dir="reports", features_dir="
                report_dir / "validation" / "features_schema.json")
     failed = failed_tables(processed) + failed_tables(features["tables"])
     if failed:
-        _alert("schema validation failed", [f"Processed dir: {processed_dir}", f"Failed tables: {failed}"],
-               {r["table"]: r["errors"][:3] for r in processed + features["tables"] if r["status"] == "failed"})
-    enforce_mode(settings["mode"], bool(failed), f"Schema validation failed for tables: {failed}")
+        _fail(settings["mode"], "schema validation failed",
+              [f"Processed dir: {processed_dir}", f"Failed tables: {failed}"],
+              {r["table"]: r["errors"][:3] for r in processed + features["tables"] if r["status"] == "failed"})
     return {"step": "schema", "status": "failed" if failed else "passed", "failed_tables": failed,
             "features": features["status"]}
 
@@ -171,11 +189,10 @@ def run_anomalies(processed_dir, params: dict, report_dir="reports", features_di
         write_json(detection, report_dir / "injection_detection.json")
 
     if critical:
-        _alert(f"{len(critical)} critical anomalies", [f"Processed dir: {processed_dir}", f"As of: {as_of}"]
-               + [f"- {r.check}: {r.message}" for r in critical],
-               {r.check: r.record_ids[:sample] for r in critical})
-    enforce_mode(settings["mode"], bool(critical),
-                 f"{len(critical)} critical anomalies: {[r.check for r in critical]}")
+        _fail(settings["mode"], f"{len(critical)} critical anomalies",
+              [f"Processed dir: {processed_dir}", f"As of: {as_of}"]
+              + [f"- {r.check}: {r.message}" for r in critical],
+              {r.check: r.record_ids[:sample] for r in critical})
     return summary
 
 

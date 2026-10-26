@@ -66,7 +66,7 @@ def test_raw_step_passes_on_the_sample(sample_raw_dir, params, tmp_path, alerts)
 def test_raw_step_without_manifest(sample_raw_dir, params, tmp_path, alerts):
     raw = shutil.copytree(sample_raw_dir, tmp_path / "raw")
     (raw / "manifest.json").unlink()
-    with pytest.raises(ValidationFailed, match="Raw validation failed"):
+    with pytest.raises(ValidationFailed, match="raw data failed validation"):
         run.run_raw(raw, params, tmp_path / "reports")
     result = run.run_raw(raw, as_report_mode(params), tmp_path / "reports")
     assert result["status"] == "failed" and result["files"][0]["file"] == "manifest.json"
@@ -138,6 +138,34 @@ def test_anomalies_step_critical_fails_strict_and_alerts(full_processed_dir, sam
     assert title == "NSH validation: 1 critical anomalies"
     assert "unparseable_money" in body and details == {"unparseable_money": ["swipes:WEX-000005"]}
     assert read(tmp_path / "anomalies.json")  # reports are written before the failure
+
+
+def test_under_airflow_strict_mode_raises_details_instead_of_alerting(full_processed_dir, sample_raw_dir, params,
+                                                                      tmp_path, alerts, monkeypatch):
+    """The DAG's on_failure_callback alerts with the exception text; M3 must not alert twice."""
+    monkeypatch.setenv("AIRFLOW_CTX_DAG_ID", "nsh_data_pipeline")
+    with pytest.raises(ValidationFailed) as failure:
+        run.run_anomalies(full_processed_dir, params, tmp_path, raw_dir=sample_raw_dir)
+    alerts.assert_not_called()
+    message = str(failure.value)
+    assert message.startswith("1 critical anomalies")
+    assert "- unparseable_money: 1 records have missing money" in message
+    assert "unparseable_money: ['swipes:WEX-000005']" in message
+
+
+def test_under_airflow_report_mode_still_alerts(full_processed_dir, sample_raw_dir, params, tmp_path,
+                                                alerts, monkeypatch):
+    """In report mode no task fails, so no callback fires: M3 sends the alert itself."""
+    monkeypatch.setenv("AIRFLOW_CTX_DAG_ID", "nsh_data_pipeline")
+    run.run_anomalies(full_processed_dir, as_report_mode(params), tmp_path, raw_dir=sample_raw_dir)
+    assert alerts.call_count == 1
+
+
+def test_under_airflow_detection(monkeypatch):
+    monkeypatch.delenv("AIRFLOW_CTX_DAG_ID", raising=False)
+    assert run.under_airflow() is False
+    monkeypatch.setenv("AIRFLOW_CTX_DAG_ID", "nsh_data_pipeline")
+    assert run.under_airflow() is True
 
 
 def test_anomalies_step_report_mode_and_answer_key(full_processed_dir, injected_raw_dir, params,
