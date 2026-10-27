@@ -36,6 +36,21 @@ dataset:
   url: "https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.0/nsh-raw-small-v1.0.tar.gz"
   sha256: "e6871efbf48dd262990f4dbd417ee992a033d0aef0afab62fdea0fb8670fc69f"
 
+# Bias detection by data slicing (M5). Swipe outcomes (denial rate, substantiation rate) are
+# compared across the client and member subgroups below. A slice is flagged when it is worse off
+# than the overall rate by more than abs_diff_pts percentage points or rel_ratio times, has at
+# least min_n rows (smaller slices are reported as "too small to judge"), and the gap is
+# significant: one-sided Fisher exact test against all other rows, p < alpha / number of slices
+# tested (Bonferroni, since dozens of slices are tested at once).
+bias:
+  min_n: 30
+  abs_diff_pts: 10
+  rel_ratio: 1.5
+  alpha: 0.01
+  slices:
+    clients: [state, group_size_bucket, status]   # client_type is mostly null: not sliced
+    members: [age_band, is_vip, coverage_tier, employee_status, gender]
+
 # Validation, statistics, drift and anomaly checks (M3). See docs/validation.md.
 validation:
   # strict: a schema failure or critical anomaly fails the stage (and the Airflow task).

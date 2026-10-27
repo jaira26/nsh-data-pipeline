@@ -47,6 +47,7 @@ bias:
   slices:
     clients: [state, group_size_bucket, status]   # client_type is mostly null: not sliced
     members: [age_band, is_vip, coverage_tier, employee_status, gender]
+
 # Validation, statistics, drift and anomaly checks (M3). See docs/validation.md.
 validation:
   # strict: a schema failure or critical anomaly fails the stage (and the Airflow task).
