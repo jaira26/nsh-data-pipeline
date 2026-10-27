@@ -106,7 +106,7 @@ Full details: [docs/data_acquisition.md](docs/data_acquisition.md).
                   generate)
 ```
 
-![DAG graph](docs/dag_graph.png)
+![DAG graph](docs/Graph.png)
 
 | Task | What it does | Calls |
 |---|---|---|
