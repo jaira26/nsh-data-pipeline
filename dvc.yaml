@@ -50,13 +50,18 @@ stages:
 #    outs:
 #      - data/features
 #
-#  bias:
-#    cmd: python -m nsh_pipeline.bias.slicing --processed-dir data/processed --params params.yaml
-#    deps:
-#      - data/processed
-#      - src/nsh_pipeline/bias
-#    params:
-#      - bias
-#    outs:
-#      - reports/bias_report.md:
-#          cache: false
+  bias:
+    cmd: python -m nsh_pipeline.bias.slicing --processed-dir data/processed --params params.yaml
+    deps:
+      - data/processed
+      - src/nsh_pipeline/bias
+    params:
+      - bias
+      - inject_issues      # the report checks the planted denial_skew when injection is on
+      - reference_date
+    outs:
+      - data/bias          # swipe_weights.parquet (reweighing mitigation)
+      - reports/bias_report.md:
+          cache: false
+      - reports/bias:
+          cache: false
