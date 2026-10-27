@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "baseline_dir": "reports\\baseline",
+  "headline": {
+    "signal": "share of swipes.status == 'Denied'",
+    "baseline_pct": 5.3835,
+    "current_pct": 5.3835,
+    "change_pts": 0.0,
+    "threshold_pts": 2.0,
+    "drifted": false
+  },
+  "findings": []
+}

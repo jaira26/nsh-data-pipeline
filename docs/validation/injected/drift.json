@@ -1,0 +1,44 @@
+{
+  "status": "drift",
+  "baseline_dir": "reports\\baseline",
+  "headline": {
+    "signal": "share of swipes.status == 'Denied'",
+    "baseline_pct": 5.3835,
+    "current_pct": 9.9356,
+    "change_pts": 4.5521,
+    "threshold_pts": 2.0,
+    "drifted": true
+  },
+  "findings": [
+    {
+      "table": "swipes",
+      "column": "denied_usd",
+      "metric": "mean",
+      "baseline": 6.847102,
+      "current": 12.217869,
+      "change": 78.4385,
+      "threshold": 20,
+      "message": "swipes.denied_usd mean changed by +78.44% (threshold 20%)"
+    },
+    {
+      "table": "swipes",
+      "column": "status",
+      "metric": "share of 'Approved'",
+      "baseline": 0.875494,
+      "current": 0.829973,
+      "change": -4.5521,
+      "threshold": 2.0,
+      "message": "swipes.status share of 'Approved' changed by -4.55 pts (threshold 2.0 pts)"
+    },
+    {
+      "table": "swipes",
+      "column": "status",
+      "metric": "share of 'Denied'",
+      "baseline": 0.053835,
+      "current": 0.099356,
+      "change": 4.5521,
+      "threshold": 2.0,
+      "message": "swipes.status share of 'Denied' changed by +4.55 pts (threshold 2.0 pts)"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "table": "members",
+  "row_count": 1369,
+  "columns": {
+    "member_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1369
+    },
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 60
+    },
+    "nswid": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1369
+    },
+    "first_name": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 397
+    },
+    "last_name": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 597
+    },
+    "ssn_masked": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1274
+    },
+    "age_band": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 6,
+      "top": [
+        {
+          "value": "55-64",
+          "count": 288,
+          "share": 0.210373
+        },
+        {
+          "value": "35-44",
+          "count": 266,
+          "share": 0.194302
+        },
+        {
+          "value": "45-54",
+          "count": 255,
+          "share": 0.186267
+        },
+        {
+          "value": "26-34",
+          "count": 245,
+          "share": 0.178963
+        },
+        {
+          "value": "18-25",
+          "count": 189,
+          "share": 0.138057
+        }
+      ],
+      "top_complete": false
+    },
+    "gender": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 2,
+      "top": [
+        {
+          "value": "M",
+          "count": 706,
+          "share": 0.515705
+        },
+        {
+          "value": "F",
+          "count": 663,
+          "share": 0.484295
+        }
+      ],
+      "top_complete": true
+    },
+    "employee_status": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 4,
+      "top": [
+        {
+          "value": "Enrolled",
+          "count": 1143,
+          "share": 0.834916
+        },
+        {
+          "value": "Not Enrolled",
+          "count": 101,
+          "share": 0.073776
+        },
+        {
+          "value": "Other",
+          "count": 84,
+          "share": 0.061359
+        },
+        {
+          "value": "COBRA Enrolled",
+          "count": 41,
+          "share": 0.029949
+        }
+      ],
+      "top_complete": true
+    },
+    "hire_date": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2016-04-07T00:00:00+00:00",
+      "max": "2025-06-15T00:00:00+00:00"
+    },
+    "term_date": {
+      "kind": "datetime",
+      "null_count": 1244,
+      "null_rate": 0.908692,
+      "min": "2019-12-17T00:00:00+00:00",
+      "max": "2025-06-14T00:00:00+00:00"
+    },
+    "is_vip": {
+      "kind": "bool",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "true_rate": 0.001461
+    },
+    "coverage_tier": {
+      "kind": "text",
+      "null_count": 113,
+      "null_rate": 0.082542,
+      "distinct": 4,
+      "top": [
+        {
+          "value": "EE",
+          "count": 614,
+          "share": 0.448503
+        },
+        {
+          "value": "EF",
+          "count": 241,
+          "share": 0.176041
+        },
+        {
+          "value": "ES",
+          "count": 209,
+          "share": 0.152666
+        },
+        {
+          "value": "EC",
+          "count": 192,
+          "share": 0.140248
+        }
+      ],
+      "top_complete": true
+    }
+  }
+}
