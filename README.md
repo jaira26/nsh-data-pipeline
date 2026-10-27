@@ -309,8 +309,18 @@ The DAG, Docker setup, DVC stages and run summary. See sections [3](#3-architect
   produced. Commit `dvc.lock` afterwards.
 - `dvc push` inside the container needs remote credentials, so it is off by default (`DVC_PUSH=false` in `.env`).
   Run `dvc push` on the host instead.
-- **Remote:** `.dvc/config` points at the team's dagshub online storage. Graders do not need it: `dvc repro` rebuilds every
-  output from the seed and the public release. The link for the dagshub DVC storage is:https://dagshub.com/Kalpan1104/nsh-data-pipeline
+- **Remote:** `.dvc/config` points at the team's DagsHub storage,
+  [dagshub.com/Kalpan1104/nsh-data-pipeline](https://dagshub.com/Kalpan1104/nsh-data-pipeline).
+  Run `dvc pull` to download every versioned output, or `dvc repro` to rebuild everything from the seed and the
+  public release (no credentials needed for either).
+
+- **Getting an older version of the data back:**
+
+```bash
+  git checkout <commit>     # the commit whose data you want
+  dvc checkout              # restores data/ to match that commit's dvc.lock
+```
+
 ---
 
 ## 9. Schema, statistics, anomaly detection & alerts
