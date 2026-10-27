@@ -1,0 +1,87 @@
+# Same as params.yaml, but with the injected data issues ON and validation in report mode,
+# to reproduce the detection evidence (docs/validation.md). Only those two values may differ
+# from params.yaml; tests/validation/test_params_injected.py enforces it.
+# Pipeline parameters, shared by the generator, preprocessing, Airflow and DVC.
+seed: 42
+scale: small                   # small | full
+reference_date: "2025-06-15"   # "as of" date for generated data and preprocessing
+
+scales:
+  small:                       # fast: CI, tests, grading
+    clients: 60
+    max_members_per_client: 150
+  full:                        # realistic size (~605 active clients in the real book)
+    clients: 605
+    max_members_per_client: 1000
+
+# Known data problems for validation (M3) and bias analysis (M5) to detect.
+# Off by default; set enabled: true to generate a dataset with them.
+# Every injected record is listed in manifest.json under "injected_issues".
+inject_issues:
+  enabled: true
+  duplicate_bill_lines: 5
+  cents_as_dollars: 5
+  orphan_swipes: 5
+  unparseable_money: 5
+  future_service_dates: 3
+  status_casing_drift: 5
+  denial_skew:
+    state: "CA"
+    rate: 0.30
+
+
+# Where data acquisition downloads the raw dataset from (a GitHub Release asset).
+# Leave url empty to generate the data locally from the seed instead.
+dataset:
+  url: "https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.0/nsh-raw-small-v1.0.tar.gz"
+  sha256: "e6871efbf48dd262990f4dbd417ee992a033d0aef0afab62fdea0fb8670fc69f"
+
+# Bias detection by data slicing (M5). Swipe outcomes (denial rate, substantiation rate) are
+# compared across the client and member subgroups below. A slice is flagged when it is worse off
+# than the overall rate by more than abs_diff_pts percentage points or rel_ratio times, has at
+# least min_n rows (smaller slices are reported as "too small to judge"), and the gap is
+# significant: one-sided Fisher exact test against all other rows, p < alpha / number of slices
+# tested (Bonferroni, since dozens of slices are tested at once).
+bias:
+  min_n: 30
+  abs_diff_pts: 10
+  rel_ratio: 1.5
+  alpha: 0.01
+  slices:
+    clients: [state, group_size_bucket, status]   # client_type is mostly null: not sliced
+    members: [age_band, is_vip, coverage_tier, employee_status, gender]
+
+# Validation, statistics, drift and anomaly checks (M3). See docs/validation.md.
+validation:
+  # strict: a schema failure or critical anomaly fails the stage (and the Airflow task).
+  # report: write every report and alert, but never fail (injected-issue runs use this,
+  # so bias slicing and DVC versioning still run).
+  mode: report
+  sample_ids: 10                 # record ids listed per finding in the reports
+  money_unit:
+    # A value above this multiple of its column's median (positive values only) is a
+    # money-unit error. Clean data peaks at 69.5x (a $5,000 swipe and its ledger line);
+    # a cents-read-as-dollars value is ~100x its true size, so 100x separates the two.
+    max_median_multiple: 100
+    min_values: 20               # columns with fewer positive values are not checked
+  active_clients:
+    # Active, non-excluded clients as a share of the scale's client count. The generator
+    # makes ~85% Active; outside this range the dataset is not the size we expect.
+    min_share: 0.70
+    max_share: 1.00
+  stats:
+    top_k: 5                     # most frequent values recorded per text column
+    max_categories: 50           # text columns with more distinct values (ids, names) get no top-k
+  drift:
+    baseline_dir: reports/baseline   # committed clean-run stats; regenerated with --update-baseline
+    # Thresholds sit well above seed-to-seed noise at small scale (seeds 1-5 vs 42):
+    # money means move <= 5.5%, the swipe Denied share <= 0.54 pts. Same-seed reruns are
+    # identical, so a row-count change is always real; 10% is where it starts to matter.
+    row_count_pct: 10
+    mean_pct: 20
+    null_rate_pts: 1.0
+    category_share_pts: 2.0
+    headline:                    # the signal reported first in reports/drift.json
+      table: swipes
+      column: status
+      value: Denied
