@@ -6,7 +6,6 @@
 generates a realistic **synthetic** dataset for Nonstop Health (NSH), downloads and checksum-verifies it, validates
 it, cleans it into reporting tables, checks it for anomalies and bias, and versions every output.
 
-Anyone can reproduce the whole run with `docker compose up`, or without Docker with `dvc repro`.
 
 ---
 
