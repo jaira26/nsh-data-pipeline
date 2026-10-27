@@ -399,7 +399,28 @@ python -m nsh_pipeline.validation.run --step all --params params.injected.yaml \
     --raw-dir data/raw_injected --processed-dir data/processed_injected --report-dir reports/injected
 ```
 
-![Alert example](docs/alert_example.png)
+With no Slack or SMTP credentials in `.env`, the alert is logged instead of sent. This is the alert from the injected
+run above (details trimmed):
+
+```text
+WARNING nsh_pipeline.utils.alerts: ALERT (no Slack/SMTP configured, logged only): NSH validation: 4 critical anomalies
+Processed dir: data/processed_injected
+As of: 2025-06-15
+- duplicate_bill_lines: 5 (member_id, billing_month) keys billed more than once (5 extra rows)
+- money_unit_error: 5 records have money above 100x the column median (cents read as dollars?)
+- orphan_keys: 5 records have a null or unresolved member_id / client_id
+- unparseable_money: 5 records have missing money after parsing (unparseable or empty in the raw data)
+
+Details:
+{
+  "duplicate_bill_lines": ["bill_lines:b00000000000000000000060|2025-03-01", ...],
+  "money_unit_error": ["swipes:WEX-001083", ...],
+  "orphan_keys": ["swipes:WEX-000081", ...],
+  "unparseable_money": ["swipes:WEX-002536", ...]
+}
+```
+
+With `SLACK_WEBHOOK_URL` or the `SMTP_*` variables set, the same title and text go to Slack or email.
 
 Full write-up: [docs/validation.md](docs/validation.md).
 
@@ -453,7 +474,7 @@ parallel** after `build_features` (`AIRFLOW__CORE__PARALLELISM=8`, LocalExecutor
 
 | Before (sequential) | After (parallel) |
 |---|---|
-| ![Gantt before](docs/gantt_before.png) | ![Gantt after](docs/gantt_after.png) |
+| ![Gantt before](docs/Before.png) | ![Gantt after](docs/After.png) |
 
 To reproduce: set `NSH_PARALLEL_REPORTS=false` in `.env`, `docker compose up -d`, trigger the DAG and open **Gantt**
 (before). Set it back to `true`, restart, and trigger again (after). Take screenshots from a second run: the first M3
@@ -564,11 +585,11 @@ Full list: [docs/decisions.md](docs/decisions.md).
 
 | Role | Member | Owns |
 |---|---|---|
-| M1: Data generation & acquisition | _name_ | `generate/`, `acquire/`, dataset release, test fixture |
-| M2: Preprocessing & features | _name_ | `preprocess/`, `features/` |
-| M3: Validation, statistics, anomalies & alerts | _name_ | `validation/`, `utils/alerts.py` |
-| M4: Orchestration, versioning & infrastructure | _name_ | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
-| M5: Testing framework, bias & documentation | _name_ | `tests/` setup, CI, `bias/`, README, `docs/` |
+| M1: Data generation & acquisition | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `generate/`, `acquire/`, dataset release, test fixture |
+| M2: Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
+| M3: Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
+| M4: Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
+| M5: Testing framework, bias & documentation | Het Prajapati ([@Het415](https://github.com/Het415)), Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `tests/` setup, CI, `bias/`, README, `docs/` |
 
 ---
 
