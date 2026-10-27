@@ -1,0 +1,62 @@
+{
+  "step": "raw",
+  "status": "passed",
+  "raw_dir": "data/raw",
+  "files": [],
+  "tables": [
+    {
+      "table": "applications",
+      "status": "passed",
+      "rows": 62,
+      "errors": []
+    },
+    {
+      "table": "people",
+      "status": "passed",
+      "rows": 1377,
+      "errors": []
+    },
+    {
+      "table": "wex_claims",
+      "status": "passed",
+      "rows": 4845,
+      "errors": []
+    },
+    {
+      "table": "claims",
+      "status": "passed",
+      "rows": 83,
+      "errors": []
+    },
+    {
+      "table": "tickets",
+      "status": "passed",
+      "rows": 183,
+      "errors": []
+    },
+    {
+      "table": "bills",
+      "status": "passed",
+      "rows": 372,
+      "errors": []
+    },
+    {
+      "table": "reserves",
+      "status": "passed",
+      "rows": 372,
+      "errors": []
+    },
+    {
+      "table": "nse_transaction_daily_logs",
+      "status": "passed",
+      "rows": 4435,
+      "errors": []
+    },
+    {
+      "table": "debit_card_status",
+      "status": "passed",
+      "rows": 1714,
+      "errors": []
+    }
+  ]
+}

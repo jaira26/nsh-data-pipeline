@@ -1,0 +1,174 @@
+{
+  "table": "clients",
+  "row_count": 62,
+  "columns": {
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 62
+    },
+    "name": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 62
+    },
+    "ein": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 61
+    },
+    "wex_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 62
+    },
+    "employer_code": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 62
+    },
+    "group_size": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 2.0,
+      "max": 274.0,
+      "mean": 24.209677,
+      "std": 41.51679,
+      "median": 12.0
+    },
+    "group_size_bucket": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 6,
+      "top": [
+        {
+          "value": "10-24",
+          "count": 25,
+          "share": 0.403226
+        },
+        {
+          "value": "1-9",
+          "count": 24,
+          "share": 0.387097
+        },
+        {
+          "value": "25-49",
+          "count": 8,
+          "share": 0.129032
+        },
+        {
+          "value": "100-249",
+          "count": 3,
+          "share": 0.048387
+        },
+        {
+          "value": "250+",
+          "count": 1,
+          "share": 0.016129
+        }
+      ],
+      "top_complete": false
+    },
+    "state": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 10,
+      "top": [
+        {
+          "value": "OR",
+          "count": 23,
+          "share": 0.370968
+        },
+        {
+          "value": "CA",
+          "count": 8,
+          "share": 0.129032
+        },
+        {
+          "value": "WA",
+          "count": 7,
+          "share": 0.112903
+        },
+        {
+          "value": "AZ",
+          "count": 5,
+          "share": 0.080645
+        },
+        {
+          "value": "ID",
+          "count": 4,
+          "share": 0.064516
+        }
+      ],
+      "top_complete": false
+    },
+    "client_type": {
+      "kind": "text",
+      "null_count": 62,
+      "null_rate": 1.0,
+      "distinct": 0,
+      "top": [],
+      "top_complete": true
+    },
+    "status": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 4,
+      "top": [
+        {
+          "value": "Active",
+          "count": 50,
+          "share": 0.806452
+        },
+        {
+          "value": "Terminated",
+          "count": 8,
+          "share": 0.129032
+        },
+        {
+          "value": "Implementation",
+          "count": 3,
+          "share": 0.048387
+        },
+        {
+          "value": "Run Out",
+          "count": 1,
+          "share": 0.016129
+        }
+      ],
+      "top_complete": true
+    },
+    "renewal_month": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 1.0,
+      "max": 12.0,
+      "mean": 6.370968,
+      "std": 3.781898,
+      "median": 6.5
+    },
+    "client_since": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2016-01-01T00:00:00+00:00",
+      "max": "2024-12-14T00:00:00+00:00"
+    },
+    "is_excluded_org": {
+      "kind": "bool",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "true_rate": 0.032258
+    }
+  }
+}

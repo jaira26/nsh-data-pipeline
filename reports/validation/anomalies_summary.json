@@ -1,0 +1,78 @@
+{
+  "step": "anomalies",
+  "generated_at": "2026-10-27T22:33:52+00:00",
+  "processed_dir": "data/processed",
+  "raw_dir": "data/raw",
+  "as_of": "2025-06-15",
+  "mode": "strict",
+  "critical_failed": 0,
+  "warnings_failed": 1,
+  "checks": {
+    "duplicate_bill_lines": {
+      "severity": "critical",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "money_unit_error": {
+      "severity": "critical",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "orphan_keys": {
+      "severity": "critical",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "excluded_org_leak": {
+      "severity": "critical",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "unparseable_money": {
+      "severity": "critical",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "active_client_count": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "enum_violations": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "future_dates": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": false,
+      "count": 5
+    },
+    "negative_amounts": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "term_before_hire": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    },
+    "distribution_drift": {
+      "severity": "warning",
+      "status": "ran",
+      "passed": true,
+      "count": 0
+    }
+  }
+}

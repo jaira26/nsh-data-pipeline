@@ -1,0 +1,60 @@
+{
+  "step": "schema",
+  "processed_dir": "data/processed",
+  "tables": [
+    {
+      "table": "clients",
+      "status": "passed",
+      "rows": 62,
+      "errors": []
+    },
+    {
+      "table": "members",
+      "status": "passed",
+      "rows": 1369,
+      "errors": []
+    },
+    {
+      "table": "member_benefits",
+      "status": "passed",
+      "rows": 1256,
+      "errors": []
+    },
+    {
+      "table": "swipes",
+      "status": "passed",
+      "rows": 4811,
+      "errors": []
+    },
+    {
+      "table": "claims",
+      "status": "passed",
+      "rows": 76,
+      "errors": []
+    },
+    {
+      "table": "tickets",
+      "status": "passed",
+      "rows": 182,
+      "errors": []
+    },
+    {
+      "table": "bill_lines",
+      "status": "passed",
+      "rows": 6499,
+      "errors": []
+    },
+    {
+      "table": "reserves",
+      "status": "passed",
+      "rows": 360,
+      "errors": []
+    },
+    {
+      "table": "ledger",
+      "status": "passed",
+      "rows": 4404,
+      "errors": []
+    }
+  ]
+}

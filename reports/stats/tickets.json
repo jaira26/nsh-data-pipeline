@@ -1,0 +1,184 @@
+{
+  "table": "tickets",
+  "row_count": 182,
+  "columns": {
+    "ticket_number": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 182
+    },
+    "member_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 179
+    },
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 50,
+      "top": [
+        {
+          "value": "a00000000000000000000023",
+          "count": 23,
+          "share": 0.126374
+        },
+        {
+          "value": "a00000000000000000000048",
+          "count": 14,
+          "share": 0.076923
+        },
+        {
+          "value": "a00000000000000000000021",
+          "count": 13,
+          "share": 0.071429
+        },
+        {
+          "value": "a00000000000000000000057",
+          "count": 10,
+          "share": 0.054945
+        },
+        {
+          "value": "a00000000000000000000011",
+          "count": 8,
+          "share": 0.043956
+        }
+      ],
+      "top_complete": false
+    },
+    "type": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 5,
+      "top": [
+        {
+          "value": "Claim",
+          "count": 101,
+          "share": 0.554945
+        },
+        {
+          "value": "Customer Support",
+          "count": 24,
+          "share": 0.131868
+        },
+        {
+          "value": "Technical Support",
+          "count": 22,
+          "share": 0.120879
+        },
+        {
+          "value": "General Questions",
+          "count": 20,
+          "share": 0.10989
+        },
+        {
+          "value": "Member Advocacy",
+          "count": 15,
+          "share": 0.082418
+        }
+      ],
+      "top_complete": true
+    },
+    "category": {
+      "kind": "text",
+      "null_count": 81,
+      "null_rate": 0.445055,
+      "distinct": 1,
+      "top": [
+        {
+          "value": "Substantiation",
+          "count": 101,
+          "share": 0.554945
+        }
+      ],
+      "top_complete": true
+    },
+    "status": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 5,
+      "top": [
+        {
+          "value": "Closed",
+          "count": 96,
+          "share": 0.527473
+        },
+        {
+          "value": "Waiting on Member",
+          "count": 41,
+          "share": 0.225275
+        },
+        {
+          "value": "In Progress",
+          "count": 18,
+          "share": 0.098901
+        },
+        {
+          "value": "New",
+          "count": 18,
+          "share": 0.098901
+        },
+        {
+          "value": "On Hold",
+          "count": 9,
+          "share": 0.049451
+        }
+      ],
+      "top_complete": true
+    },
+    "priority": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 3,
+      "top": [
+        {
+          "value": "Medium",
+          "count": 100,
+          "share": 0.549451
+        },
+        {
+          "value": "Low",
+          "count": 49,
+          "share": 0.269231
+        },
+        {
+          "value": "High",
+          "count": 33,
+          "share": 0.181319
+        }
+      ],
+      "top_complete": true
+    },
+    "is_vip": {
+      "kind": "bool",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "true_rate": 0.0
+    },
+    "created_at": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2025-01-03T17:00:00+00:00",
+      "max": "2025-06-15T08:00:00+00:00"
+    },
+    "closed_at": {
+      "kind": "datetime",
+      "null_count": 86,
+      "null_rate": 0.472527,
+      "min": "2025-01-06T14:24:05+00:00",
+      "max": "2025-06-16T20:35:15+00:00"
+    },
+    "sla_breached": {
+      "kind": "bool",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "true_rate": 0.620879
+    }
+  }
+}

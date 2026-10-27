@@ -1,0 +1,135 @@
+[
+  {
+    "check": "duplicate_bill_lines",
+    "severity": "critical",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "every (member_id, billing_month) appears once in bill_lines",
+    "details": {
+      "duplicate_keys": 0,
+      "extra_rows": 0
+    }
+  },
+  {
+    "check": "money_unit_error",
+    "severity": "critical",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "no money value above 100x its column median",
+    "details": {}
+  },
+  {
+    "check": "orphan_keys",
+    "severity": "critical",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "every member_id / client_id resolves to its parent table",
+    "details": {}
+  },
+  {
+    "check": "excluded_org_leak",
+    "severity": "critical",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "NS Demo / NSAI appear only in clients, flagged is_excluded_org",
+    "details": {}
+  },
+  {
+    "check": "unparseable_money",
+    "severity": "critical",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "every money value parsed to a number",
+    "details": {}
+  },
+  {
+    "check": "active_client_count",
+    "severity": "warning",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "48 active clients, expected 42-60 for scale 'small'",
+    "details": {
+      "active_clients": 48,
+      "expected_range": [
+        42.0,
+        60.0
+      ],
+      "scale": "small"
+    }
+  },
+  {
+    "check": "enum_violations",
+    "severity": "warning",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "every enum value is in the contract A5 lists",
+    "details": {}
+  },
+  {
+    "check": "future_dates",
+    "severity": "warning",
+    "status": "ran",
+    "passed": false,
+    "count": 5,
+    "sample_record_ids": [
+      "claims:CLM-100003",
+      "claims:CLM-100012",
+      "claims:CLM-100018",
+      "claims:CLM-100036",
+      "claims:CLM-100067"
+    ],
+    "message": "5 records dated after the as-of date 2025-06-15",
+    "details": {
+      "claims.created_at": {
+        "count": 5,
+        "max": "2025-06-20T00:00:00+00:00"
+      }
+    }
+  },
+  {
+    "check": "negative_amounts",
+    "severity": "warning",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "no negative paid, requested or billed amounts",
+    "details": {}
+  },
+  {
+    "check": "term_before_hire",
+    "severity": "warning",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "no termination date before a hire date",
+    "details": {}
+  },
+  {
+    "check": "distribution_drift",
+    "severity": "warning",
+    "status": "ran",
+    "passed": true,
+    "count": 0,
+    "sample_record_ids": [],
+    "message": "no drift beyond the thresholds",
+    "details": {
+      "findings": []
+    }
+  }
+]

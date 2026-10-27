@@ -64,3 +64,146 @@ stages:
       md5: c296a81d12359267ca16027d7d53bf2e.dir
       size: 387262
       nfiles: 9
+  validate:
+    cmd: python -m nsh_pipeline.validation.run --step all --raw-dir data/raw 
+      --processed-dir data/processed --params params.yaml
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: c296a81d12359267ca16027d7d53bf2e.dir
+      size: 387262
+      nfiles: 9
+    - path: data/raw
+      hash: md5
+      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
+      size: 7813015
+      nfiles: 10
+    - path: reports/baseline
+      hash: md5
+      md5: 9022822b795854458684e031ec1f7078.dir
+      size: 26821
+      nfiles: 9
+    - path: src/nsh_pipeline/validation
+      hash: md5
+      md5: 0d36d01b16e8ba9787fbfc26ca7b6bda.dir
+      size: 190792
+      nfiles: 26
+    params:
+      params.yaml:
+        reference_date: '2025-06-15'
+        scale: small
+        scales:
+          small:
+            clients: 60
+            max_members_per_client: 150
+          full:
+            clients: 605
+            max_members_per_client: 1000
+        validation:
+          mode: strict
+          sample_ids: 10
+          money_unit:
+            max_median_multiple: 100
+            min_values: 20
+          active_clients:
+            min_share: 0.7
+            max_share: 1.0
+          stats:
+            top_k: 5
+            max_categories: 50
+          drift:
+            baseline_dir: reports/baseline
+            row_count_pct: 10
+            mean_pct: 20
+            null_rate_pts: 1.0
+            category_share_pts: 2.0
+            headline:
+              table: swipes
+              column: status
+              value: Denied
+    outs:
+    - path: reports/anomalies.json
+      hash: md5
+      md5: ccab0e2184c1b28605e7577efa9a6f24
+      size: 3075
+    - path: reports/anomalies.md
+      hash: md5
+      md5: e772d2d5835018a65200f748464cdbb6
+      size: 1524
+    - path: reports/drift.json
+      hash: md5
+      md5: cbfb1521c8f65287d7fe94ccb8ea0f0a
+      size: 275
+    - path: reports/injection_detection.json
+      hash: md5
+      md5: 2f60eddb566e436abd2a2f32a71adadd
+      size: 67
+    - path: reports/stats
+      hash: md5
+      md5: 9022822b795854458684e031ec1f7078.dir
+      size: 26821
+      nfiles: 9
+    - path: reports/validation
+      hash: md5
+      md5: 5d0a0cb422fc06cb0ea5de092c04c809.dir
+      size: 3844
+      nfiles: 4
+  bias:
+    cmd: python -m nsh_pipeline.bias.slicing --processed-dir data/processed 
+      --params params.yaml
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: c296a81d12359267ca16027d7d53bf2e.dir
+      size: 387262
+      nfiles: 9
+    - path: src/nsh_pipeline/bias
+      hash: md5
+      md5: 18e9fdc268e7c491ab257bf62f6e9f1f.dir
+      size: 104611
+      nfiles: 10
+    params:
+      params.yaml:
+        bias:
+          min_n: 30
+          abs_diff_pts: 10
+          rel_ratio: 1.5
+          alpha: 0.01
+          slices:
+            clients:
+            - state
+            - group_size_bucket
+            - status
+            members:
+            - age_band
+            - is_vip
+            - coverage_tier
+            - employee_status
+            - gender
+        inject_issues:
+          enabled: false
+          duplicate_bill_lines: 5
+          cents_as_dollars: 5
+          orphan_swipes: 5
+          unparseable_money: 5
+          future_service_dates: 3
+          status_casing_drift: 5
+          denial_skew:
+            state: CA
+            rate: 0.3
+        reference_date: '2025-06-15'
+    outs:
+    - path: data/bias
+      hash: md5
+      md5: b765e0a6715d9e45abe04da0eb91fd60.dir
+      size: 33686
+      nfiles: 1
+    - path: reports/bias
+      hash: md5
+      md5: fb2b7917e0689f2c426ee82668bd9047.dir
+      size: 62537
+      nfiles: 2
+    - path: reports/bias_report.md
+      hash: md5
+      md5: 9e50fd36fe7f810f40dcdc12d21addca
+      size: 6581

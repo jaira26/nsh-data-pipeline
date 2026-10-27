@@ -1,0 +1,59 @@
+{
+  "table": "reserves",
+  "row_count": 360,
+  "columns": {
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 60
+    },
+    "month": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2025-01-01T00:00:00+00:00",
+      "max": "2025-06-01T00:00:00+00:00"
+    },
+    "balance_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 6887.28,
+      "max": 112428.66,
+      "mean": 34211.936333,
+      "std": 16865.104505,
+      "median": 33679.075
+    },
+    "reserves_billed_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 136.45,
+      "max": 26406.4,
+      "mean": 3677.140611,
+      "std": 5004.122589,
+      "median": 2070.615
+    },
+    "claims_paid_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 0.0,
+      "max": 18363.85,
+      "mean": 1480.338667,
+      "std": 2370.652998,
+      "median": 798.585
+    },
+    "return_of_reserve_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "std": 0.0,
+      "median": 0.0
+    }
+  }
+}
