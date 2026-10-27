@@ -585,11 +585,11 @@ Full list: [docs/decisions.md](docs/decisions.md).
 
 | Role | Member | Owns |
 |---|---|---|
-| M1: Data generation & acquisition | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `generate/`, `acquire/`, dataset release, test fixture |
-| M2: Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
-| M3: Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
-| M4: Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
-| M5: Testing framework, bias & documentation | Het Prajapati ([@Het415](https://github.com/Het415)), Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `tests/` setup, CI, `bias/`, README, `docs/` |
+| Data generation & acquisition | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `generate/`, `acquire/`, dataset release, test fixture |
+| Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
+| Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
+| Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
+| Testing framework, bias & documentation | Het Prajapati ([@Het415](https://github.com/Het415)), Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `tests/` setup, CI, `bias/`, README, `docs/` |
 
 ---
 
