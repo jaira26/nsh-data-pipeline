@@ -1,0 +1,7 @@
+{
+  "step": "schema",
+  "features_dir": "data/features",
+  "status": "skipped",
+  "reason": "no feature tables in data/features",
+  "tables": []
+}

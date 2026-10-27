@@ -1,0 +1,143 @@
+{
+  "table": "bill_lines",
+  "row_count": 6499,
+  "columns": {
+    "client_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 60
+    },
+    "billing_month": {
+      "kind": "datetime",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": "2025-01-01T00:00:00+00:00",
+      "max": "2025-06-01T00:00:00+00:00"
+    },
+    "member_id": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 1216
+    },
+    "plan_name": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 20,
+      "top": [
+        {
+          "value": "NSW Anthem 5000/10000",
+          "count": 957,
+          "share": 0.147253
+        },
+        {
+          "value": "NSW BCBS 3000/6000",
+          "count": 723,
+          "share": 0.111248
+        },
+        {
+          "value": "NSW Anthem 2000/4000",
+          "count": 701,
+          "share": 0.107863
+        },
+        {
+          "value": "NSW BSC 3000/6000",
+          "count": 515,
+          "share": 0.079243
+        },
+        {
+          "value": "NSW Anthem 3000/6000",
+          "count": 475,
+          "share": 0.073088
+        }
+      ],
+      "top_complete": false
+    },
+    "carrier": {
+      "kind": "text",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "distinct": 5,
+      "top": [
+        {
+          "value": "Anthem",
+          "count": 2221,
+          "share": 0.341745
+        },
+        {
+          "value": "BCBS",
+          "count": 1435,
+          "share": 0.220803
+        },
+        {
+          "value": "BSC",
+          "count": 1283,
+          "share": 0.197415
+        },
+        {
+          "value": "Cigna",
+          "count": 836,
+          "share": 0.128635
+        },
+        {
+          "value": "Aetna",
+          "count": 724,
+          "share": 0.111402
+        }
+      ],
+      "top_complete": true
+    },
+    "premium_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 452.44,
+      "max": 899.6,
+      "mean": 678.961199,
+      "std": 99.863101,
+      "median": 674.47
+    },
+    "admin_fee_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 35.0,
+      "max": 35.0,
+      "mean": 35.0,
+      "std": 0.0,
+      "median": 35.0
+    },
+    "reserve_charge_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 135.73,
+      "max": 269.88,
+      "mean": 203.688355,
+      "std": 29.959103,
+      "median": 202.34
+    },
+    "broker_fee_usd": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 12.5,
+      "max": 12.5,
+      "mean": 12.5,
+      "std": 0.0,
+      "median": 12.5
+    },
+    "member_count": {
+      "kind": "number",
+      "null_count": 0,
+      "null_rate": 0.0,
+      "min": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "std": 0.0,
+      "median": 1.0
+    }
+  }
+}

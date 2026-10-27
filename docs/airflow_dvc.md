@@ -106,10 +106,6 @@ durations and the DVC result.
    `docs/Before.png`.
 2. **After:** set it back to `true`, `docker compose up -d`, trigger again, save
    `docs/After.png`.
-3. Notes for the report: _fill in after the runs_. What was the longest bar (likely
-   `acquire_data` on the first run, then `preprocess`)? How much did running stats,
-   anomalies and bias side by side save? What else could be done, such as caching the
-   download or skipping unchanged stages with `dvc repro`?
 
 ## Troubleshooting
 
