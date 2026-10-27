@@ -23,25 +23,39 @@ stages:
     outs:
       - data/processed
 
+  # M3: raw + processed schemas, stats + drift vs reports/baseline, anomaly checks
+  # (and reports/injection_detection.json). Same functions as the Airflow tasks
+  # validate_raw, validate_processed, stats and anomalies.
+  validate:
+    cmd: python -m nsh_pipeline.validation.run --step all --raw-dir data/raw --processed-dir data/processed --params params.yaml
+    deps:
+      - data/raw
+      - data/processed
+      - reports/baseline
+      - src/nsh_pipeline/validation
+    params:
+      - reference_date
+      - scale
+      - scales
+      - validation
+    outs:
+      - reports/validation:
+          cache: false
+      - reports/stats:
+          cache: false
+      - reports/drift.json:
+          cache: false
+      - reports/anomalies.json:
+          cache: false
+      - reports/anomalies.md:
+          cache: false
+      - reports/injection_detection.json:
+          cache: false
+
 # Uncomment each stage once its module is merged (a missing dependency folder or a
 # params section that doesn't exist yet makes `dvc repro` fail). Confirm the exact
 # CLI and output paths with the owner; they must match orchestration/stages.py.
 
-#  validate:
-#    cmd: python -m nsh_pipeline.validation.run --processed-dir data/processed --params params.yaml
-#    deps:
-#      - data/processed
-#      - src/nsh_pipeline/validation
-#    params:
-#      - validation
-#    outs:
-#      - reports/stats:
-#          cache: false
-#      - reports/anomalies.json:
-#          cache: false
-#      - reports/anomalies.md:
-#          cache: false
-#
 #  features:
 #    cmd: python -m nsh_pipeline.features.run --processed-dir data/processed --out-dir data/features --params params.yaml
 #    deps:

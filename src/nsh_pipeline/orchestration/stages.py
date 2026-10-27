@@ -14,6 +14,9 @@ from __future__ import annotations
 PROCESSED = ["--processed-dir", "data/processed", "--params", "params.yaml"]
 
 STAGES: dict[str, tuple[str, list[str]]] = {
+    # M3: raw files vs manifest.json + light raw schemas, before preprocessing (plan section 8, stage 3)
+    "validate_raw": ("nsh_pipeline.validation.run", ["--raw-dir", "data/raw", "--params", "params.yaml",
+                                                     "--step", "raw"]),
     # M3: schema validation of the processed tables (fails the run on a schema error)
     "validate_processed": ("nsh_pipeline.validation.run", [*PROCESSED, "--step", "schema"]),
     # FE: feature tables into data/features/
