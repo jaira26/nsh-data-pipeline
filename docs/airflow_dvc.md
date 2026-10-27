@@ -102,9 +102,9 @@ durations and the DVC result.
 
 1. **Before:** set `NSH_PARALLEL_REPORTS=false` in `.env`, run `docker compose up -d`
    (reloads the setting), trigger the DAG, open the run → **Gantt** tab, save
-   `docs/gantt_before.png`.
+   `docs/Before.png`.
 2. **After:** set it back to `true`, `docker compose up -d`, trigger again, save
-   `docs/gantt_after.png`.
+   `docs/After.png`.
 3. Notes for the report: _fill in after the runs_. What was the longest bar (likely
    `acquire_data` on the first run, then `preprocess`)? How much did running stats,
    anomalies and bias side by side save? What else could be done, such as caching the
