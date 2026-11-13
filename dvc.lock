@@ -6,14 +6,14 @@ stages:
     deps:
     - path: src/nsh_pipeline/acquire
       hash: md5
-      md5: 2d62d9a78a01c8219be7ada8bf191865.dir
-      size: 17034
-      nfiles: 6
+      md5: e3fc0eee63e7a54512ee4839d92fed9f.dir
+      size: 27859
+      nfiles: 8
     - path: src/nsh_pipeline/generate
       hash: md5
-      md5: 90f5f3d399ff75e23d9bf3189ad505ca.dir
-      size: 97500
-      nfiles: 18
+      md5: be6c488304af7b60a1467e555d9ce846.dir
+      size: 170051
+      nfiles: 27
     params:
       params.yaml:
         dataset:
@@ -38,8 +38,8 @@ stages:
     outs:
     - path: data/raw
       hash: md5
-      md5: 50dfc601d4638941a119b70024c12936.dir
-      size: 7761231
+      md5: fb0d1ae98b8c12e8edd97a1e9ed55850.dir
+      size: 7761185
       nfiles: 10
   preprocess:
     cmd: python -m nsh_pipeline.preprocess.run --raw-dir data/raw --out-dir 
