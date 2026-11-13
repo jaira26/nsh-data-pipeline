@@ -664,6 +664,7 @@ and the fitted model.
 | Selected run: params, metrics, `data_version` / `git_sha` tags | ![MLflow run detail](docs/model_training/mlflow_run_detail.png) |
 | Charts logged as run artifacts | ![MLflow artifacts](docs/model_training/mlflow_artifacts.png) |
 | Hyperparameter search (parallel coordinates) | ![MLflow tuning](docs/model_training/mlflow_tuning.png) |
+| Candidate metrics side by side | ![MLflow compare metrics](docs/model_training/mlflow_compare_metrics.png) |
 
 ### Outputs (model contract)
 
