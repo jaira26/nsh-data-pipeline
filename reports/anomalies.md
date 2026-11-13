@@ -22,8 +22,8 @@
 
 5 records dated after the as-of date 2025-06-15
 
-Sample records: `claims:CLM-100003`, `claims:CLM-100012`, `claims:CLM-100018`, `claims:CLM-100036`, `claims:CLM-100067`
+Sample records: `claims:CLM-100018`, `claims:CLM-100023`, `claims:CLM-100024`, `claims:CLM-100056`, `claims:CLM-100060`
 
 ```
-claims.created_at: {'count': 5, 'max': '2025-06-20T00:00:00+00:00'}
+claims.created_at: {'count': 5, 'max': '2025-06-25T00:00:00+00:00'}
 ```

@@ -108,3 +108,37 @@ training_data:
   validation_start: "2025-05-01"   # train = before this date
   test_start: "2025-06-01"         # validation = May; test = from this date
   out_dir: data/training
+
+# Model training, tuning and selection (phase 2, Kalpan). See docs/model_training.md.
+# Tuning: Optuna TPE, n_trials per model, stratified cv_folds-fold CV on the TRAIN split only.
+# Selection: best validation PR-AUC (denials are a minority class) -> models/best/.
+model:
+  seed: 42
+  candidates: [logistic_regression, random_forest, lightgbm]
+  selection_metric: pr_auc
+  cv_folds: 5
+  n_trials: 25                     # CI and tests pass --n-trials 2
+  models_dir: models
+  reports_dir: reports/model/training
+  mlflow:
+    experiment: nsh-denial-model
+    tracking_uri: "sqlite:///mlflow.db"   # MLFLOW_TRACKING_URI overrides (e.g. http://localhost:5000)
+    log_models: true
+  # Hyperparameter search space per model: {type: int|float|categorical, low, high, step, log, choices}
+  search_space:
+    logistic_regression:
+      C: {type: float, low: 0.001, high: 100.0, log: true}         # inverse regularisation strength
+      l1_ratio: {type: float, low: 0.0, high: 1.0}                   # 0 = ridge (L2), 1 = lasso (L1)
+    random_forest:
+      n_estimators: {type: int, low: 100, high: 500, step: 50}
+      max_depth: {type: int, low: 3, high: 20}
+      min_samples_leaf: {type: int, low: 1, high: 30}
+      max_features: {type: categorical, choices: [sqrt, log2, 0.5]}
+    lightgbm:
+      n_estimators: {type: int, low: 100, high: 600, step: 50}
+      learning_rate: {type: float, low: 0.01, high: 0.3, log: true}
+      num_leaves: {type: int, low: 8, high: 64}
+      min_child_samples: {type: int, low: 5, high: 60}
+      subsample: {type: float, low: 0.6, high: 1.0}
+      colsample_bytree: {type: float, low: 0.6, high: 1.0}
+      reg_lambda: {type: float, low: 0.001, high: 10.0, log: true}

@@ -23,19 +23,19 @@
     {
       "table": "swipes",
       "status": "passed",
-      "rows": 4811,
+      "rows": 4881,
       "errors": []
     },
     {
       "table": "claims",
       "status": "passed",
-      "rows": 76,
+      "rows": 66,
       "errors": []
     },
     {
       "table": "tickets",
       "status": "passed",
-      "rows": 182,
+      "rows": 166,
       "errors": []
     },
     {
@@ -53,7 +53,7 @@
     {
       "table": "ledger",
       "status": "passed",
-      "rows": 4404,
+      "rows": 4256,
       "errors": []
     }
   ]

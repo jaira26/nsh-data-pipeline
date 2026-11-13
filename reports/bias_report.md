@@ -4,10 +4,10 @@
 
 ## Summary
 
-- **4,811 swipes analysed** out of 4,811. Dropped: 0 orphan swipes (member not in `members`) and 0 with an unknown or excluded client. 0 swipes have an unparseable paid amount and are left out of the average paid.
-- Overall denial rate **5.4%**; substantiation rate **2.5%** of 4,016 paid debit-card swipes.
+- **4,881 swipes analysed** out of 4,881. Dropped: 0 orphan swipes (member not in `members`) and 0 with an unknown or excluded client. 0 swipes have an unparseable paid amount and are left out of the average paid.
+- Overall denial rate **10.2%**; substantiation rate **2.7%** of 3,916 paid debit-card swipes.
 - **No slice is flagged.** Every slice with at least 30 swipes is within 10 points and 1.5× of the overall rate, or its gap is not significant.
-- Too small to judge (fewer than 30 swipes): is_vip = True (n = 10).
+- Too small to judge (fewer than 30 swipes): is_vip = True (n = 7).
 
 ## Method
 
@@ -29,43 +29,43 @@ None.
 
 | Slice | Swipes | Denial rate | Paid debit swipes | Substantiation rate | Avg paid |
 |---|---|---|---|---|---|
-| group_size_bucket = 1-9 | 474 | 5.5% | 391 | 2.6% | $114.77 |
-| group_size_bucket = 10-24 | 1,318 | 5.2% | 1,108 | 2.2% | $109.21 |
-| group_size_bucket = 25-49 | 921 | 5.4% | 771 | 4.0% | $119.47 |
-| group_size_bucket = 50-99 | 211 | 6.2% | 172 | 2.3% | $108.16 |
-| group_size_bucket = 100-249 | 1,348 | 5.6% | 1,116 | 1.8% | $103.79 |
-| group_size_bucket = 250+ | 539 | 5.0% | 458 | 2.6% | $114.70 |
-| age_band = 18-25 | 708 | 6.1% | 596 | 2.3% | $115.12 |
-| age_band = 26-34 | 880 | 5.3% | 736 | 2.3% | $104.04 |
-| age_band = 35-44 | 913 | 5.7% | 746 | 2.5% | $105.67 |
-| age_band = 45-54 | 853 | 4.9% | 711 | 2.7% | $109.58 |
-| age_band = 55-64 | 1,001 | 4.6% | 842 | 2.4% | $115.07 |
-| age_band = 65+ | 456 | 6.4% | 385 | 3.1% | $120.01 |
-| state = AZ | 215 | 5.6% | 184 | 2.2% | $101.60 |
-| state = CA | 899 | 5.8% | 750 | 1.9% | $101.13 |
-| state = CO | 131 | 5.3% | 108 | 5.6% | $115.75 |
-| state = ID | 177 | 4.5% | 143 | 2.1% | $120.25 |
-| state = NV | 122 | 2.5% | 105 | 2.9% | $122.15 |
-| state = NY | 83 | 4.8% | 66 | 4.5% | $99.25 |
-| state = OR | 2,242 | 5.3% | 1,880 | 2.3% | $111.84 |
-| state = TX | 256 | 4.3% | 213 | 4.2% | $136.47 |
-| state = UT | 170 | 5.9% | 140 | 3.6% | $121.80 |
-| state = WA | 516 | 6.4% | 427 | 2.3% | $105.02 |
-| client_status = Active | 3,779 | 5.3% | 3,154 | 2.7% | $111.90 |
-| client_status = Implementation | 117 | 6.8% | 98 | 1.0% | $102.07 |
-| client_status = Run Out | 53 | 1.9% | 42 | 0.0% | $78.30 |
-| client_status = Terminated | 862 | 5.8% | 722 | 2.1% | $108.99 |
-| employee_status = COBRA Enrolled | 172 | 6.4% | 139 | 2.2% | $116.06 |
-| employee_status = Enrolled | 4,493 | 5.4% | 3,756 | 2.5% | $110.86 |
-| employee_status = Other | 146 | 4.8% | 121 | 2.5% | $101.76 |
-| coverage_tier = EC | 741 | 5.0% | 621 | 2.6% | $111.51 |
-| coverage_tier = EE | 2,353 | 5.3% | 1,950 | 2.9% | $108.31 |
-| coverage_tier = EF | 944 | 5.7% | 800 | 2.2% | $118.50 |
-| coverage_tier = ES | 773 | 5.6% | 645 | 1.7% | $108.11 |
-| gender = F | 2,400 | 5.8% | 1,977 | 2.4% | $106.84 |
-| gender = M | 2,411 | 4.9% | 2,039 | 2.6% | $114.69 |
-| is_vip = False | 4,801 | 5.4% | 4,007 | 2.5% | $110.72 |
-| is_vip = True | 10 | 10.0% (too small) | 9 | 0.0% (too small) | $135.09 |
+| group_size_bucket = 1-9 | 487 | 8.8% | 391 | 2.0% | $95.98 |
+| group_size_bucket = 10-24 | 1,308 | 8.9% | 1,069 | 2.7% | $100.17 |
+| group_size_bucket = 25-49 | 914 | 8.3% | 746 | 2.7% | $103.75 |
+| group_size_bucket = 50-99 | 247 | 13.8% | 189 | 3.2% | $108.39 |
+| group_size_bucket = 100-249 | 1,382 | 12.6% | 1,085 | 2.7% | $99.68 |
+| group_size_bucket = 250+ | 543 | 10.5% | 436 | 2.8% | $103.07 |
+| age_band = 18-25 | 727 | 12.5% | 557 | 2.9% | $105.01 |
+| age_band = 26-34 | 841 | 11.5% | 677 | 2.1% | $94.77 |
+| age_band = 35-44 | 935 | 11.9% | 740 | 4.1% | $100.77 |
+| age_band = 45-54 | 889 | 9.6% | 713 | 3.2% | $103.30 |
+| age_band = 55-64 | 1,050 | 7.1% | 869 | 1.5% | $102.19 |
+| age_band = 65+ | 439 | 9.3% | 360 | 2.2% | $99.53 |
+| state = AZ | 205 | 4.9% | 177 | 4.0% | $95.81 |
+| state = CA | 867 | 9.6% | 707 | 3.3% | $96.31 |
+| state = CO | 136 | 7.4% | 110 | 1.8% | $103.97 |
+| state = ID | 179 | 5.0% | 149 | 2.0% | $84.23 |
+| state = NV | 129 | 10.9% | 98 | 3.1% | $98.28 |
+| state = NY | 79 | 11.4% | 65 | 1.5% | $70.78 |
+| state = OR | 2,305 | 11.7% | 1,819 | 2.3% | $101.26 |
+| state = TX | 268 | 7.1% | 224 | 3.1% | $117.18 |
+| state = UT | 170 | 5.9% | 139 | 1.4% | $119.26 |
+| state = WA | 543 | 12.3% | 428 | 3.3% | $105.67 |
+| client_status = Active | 3,784 | 10.7% | 3,014 | 2.9% | $99.87 |
+| client_status = Implementation | 129 | 8.5% | 110 | 1.8% | $95.30 |
+| client_status = Run Out | 41 | 7.3% | 34 | 0.0% | $115.65 |
+| client_status = Terminated | 927 | 8.8% | 758 | 1.8% | $105.86 |
+| employee_status = COBRA Enrolled | 155 | 3.9% | 134 | 3.7% | $118.50 |
+| employee_status = Enrolled | 4,606 | 10.5% | 3,678 | 2.6% | $100.78 |
+| employee_status = Other | 120 | 7.5% | 104 | 2.9% | $87.61 |
+| coverage_tier = EC | 712 | 11.5% | 562 | 1.4% | $101.78 |
+| coverage_tier = EE | 2,368 | 10.1% | 1,912 | 3.1% | $99.35 |
+| coverage_tier = EF | 947 | 11.5% | 738 | 2.8% | $97.95 |
+| coverage_tier = ES | 854 | 8.3% | 704 | 2.3% | $108.44 |
+| gender = F | 2,393 | 10.0% | 1,921 | 2.5% | $100.46 |
+| gender = M | 2,488 | 10.5% | 1,995 | 2.8% | $101.56 |
+| is_vip = False | 4,874 | 10.3% | 3,910 | 2.7% | $101.08 |
+| is_vip = True | 7 | 0.0% (too small) | 6 | 0.0% (too small) | $64.20 |
 
 ## Interpretation
 

@@ -19,19 +19,19 @@
     {
       "table": "wex_claims",
       "status": "passed",
-      "rows": 4845,
+      "rows": 4906,
       "errors": []
     },
     {
       "table": "claims",
       "status": "passed",
-      "rows": 83,
+      "rows": 70,
       "errors": []
     },
     {
       "table": "tickets",
       "status": "passed",
-      "rows": 183,
+      "rows": 167,
       "errors": []
     },
     {
@@ -49,13 +49,13 @@
     {
       "table": "nse_transaction_daily_logs",
       "status": "passed",
-      "rows": 4435,
+      "rows": 4279,
       "errors": []
     },
     {
       "table": "debit_card_status",
       "status": "passed",
-      "rows": 1714,
+      "rows": 1719,
       "errors": []
     }
   ]

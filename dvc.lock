@@ -6,14 +6,14 @@ stages:
     deps:
     - path: src/nsh_pipeline/acquire
       hash: md5
-      md5: e3fc0eee63e7a54512ee4839d92fed9f.dir
-      size: 27859
-      nfiles: 8
+      md5: 1d47e49da8572bd903b6824a0ba59e2c.dir
+      size: 18496
+      nfiles: 6
     - path: src/nsh_pipeline/generate
       hash: md5
-      md5: be6c488304af7b60a1467e555d9ce846.dir
-      size: 170051
-      nfiles: 27
+      md5: 79210bb56617fc7191c8b86a79494c64.dir
+      size: 106320
+      nfiles: 18
     params:
       params.yaml:
         dataset:
@@ -47,13 +47,13 @@ stages:
     deps:
     - path: data/raw
       hash: md5
-      md5: 50dfc601d4638941a119b70024c12936.dir
-      size: 7761231
+      md5: fb0d1ae98b8c12e8edd97a1e9ed55850.dir
+      size: 7761185
       nfiles: 10
     - path: src/nsh_pipeline/preprocess
       hash: md5
-      md5: 9e35fe86b379faae68c3b23c7bb2b4b6.dir
-      size: 64803
+      md5: e1264f80f317015d822b048fec87556d.dir
+      size: 69828
       nfiles: 16
     params:
       params.yaml:
@@ -70,23 +70,23 @@ stages:
     deps:
     - path: data/processed
       hash: md5
-      md5: c296a81d12359267ca16027d7d53bf2e.dir
-      size: 387262
+      md5: 10a14d5f43d4b533be16bf7022a85b54.dir
+      size: 377774
       nfiles: 9
     - path: data/raw
       hash: md5
-      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
-      size: 7813015
+      md5: fb0d1ae98b8c12e8edd97a1e9ed55850.dir
+      size: 7761185
       nfiles: 10
     - path: reports/baseline
       hash: md5
-      md5: 9022822b795854458684e031ec1f7078.dir
-      size: 26821
+      md5: 82a0607671c3d52afd8b4ddd3fab4b9f.dir
+      size: 26703
       nfiles: 9
     - path: src/nsh_pipeline/validation
       hash: md5
-      md5: 0d36d01b16e8ba9787fbfc26ca7b6bda.dir
-      size: 190792
+      md5: 5313327d305f97ef3ee080e910d8916b.dir
+      size: 191671
       nfiles: 26
     params:
       params.yaml:
@@ -124,28 +124,28 @@ stages:
     outs:
     - path: reports/anomalies.json
       hash: md5
-      md5: ccab0e2184c1b28605e7577efa9a6f24
+      md5: a21a52a7db643e643e29f390964423c4
       size: 3075
     - path: reports/anomalies.md
       hash: md5
-      md5: e772d2d5835018a65200f748464cdbb6
+      md5: 9752236debe826af83eb4e1356e1f48c
       size: 1524
     - path: reports/drift.json
       hash: md5
-      md5: cbfb1521c8f65287d7fe94ccb8ea0f0a
-      size: 275
+      md5: 280f61e93b5a672d775a8cd1dbe1d97b
+      size: 277
     - path: reports/injection_detection.json
       hash: md5
       md5: 2f60eddb566e436abd2a2f32a71adadd
       size: 67
     - path: reports/stats
       hash: md5
-      md5: 9022822b795854458684e031ec1f7078.dir
-      size: 26821
+      md5: 82a0607671c3d52afd8b4ddd3fab4b9f.dir
+      size: 26703
       nfiles: 9
     - path: reports/validation
       hash: md5
-      md5: 5d0a0cb422fc06cb0ea5de092c04c809.dir
+      md5: 6603288ddefc8bc4c833d9323e4932f4.dir
       size: 3844
       nfiles: 4
   bias:
@@ -154,13 +154,13 @@ stages:
     deps:
     - path: data/processed
       hash: md5
-      md5: c296a81d12359267ca16027d7d53bf2e.dir
-      size: 387262
+      md5: 10a14d5f43d4b533be16bf7022a85b54.dir
+      size: 377774
       nfiles: 9
     - path: src/nsh_pipeline/bias
       hash: md5
-      md5: 18e9fdc268e7c491ab257bf62f6e9f1f.dir
-      size: 104611
+      md5: 4cc004c538888a45c5ceaff5bce1da80.dir
+      size: 105399
       nfiles: 10
     params:
       params.yaml:
@@ -195,18 +195,18 @@ stages:
     outs:
     - path: data/bias
       hash: md5
-      md5: b765e0a6715d9e45abe04da0eb91fd60.dir
-      size: 33686
+      md5: 1f48a8ccea99d34e9bbb42435510a700.dir
+      size: 34204
       nfiles: 1
     - path: reports/bias
       hash: md5
-      md5: fb2b7917e0689f2c426ee82668bd9047.dir
-      size: 62537
+      md5: b82da18a35139325fd1fb2d3b610f2cf.dir
+      size: 65213
       nfiles: 2
     - path: reports/bias_report.md
       hash: md5
-      md5: 9e50fd36fe7f810f40dcdc12d21addca
-      size: 6581
+      md5: dd97af741bff76a591d8c877565106f8
+      size: 6584
   build_training_set:
     cmd: python -m nsh_pipeline.modeling.build --processed-dir data/processed 
       --raw-dir data/raw --params params.yaml
@@ -218,25 +218,25 @@ stages:
       nfiles: 9
     - path: data/raw
       hash: md5
-      md5: 50dfc601d4638941a119b70024c12936.dir
-      size: 7761231
+      md5: fb0d1ae98b8c12e8edd97a1e9ed55850.dir
+      size: 7761185
       nfiles: 10
     - path: src/nsh_pipeline/modeling/build.py
       hash: md5
-      md5: 32bd3be3e0ec00c59fb09b1da7bcb9d8
-      size: 2997
+      md5: 3395719b2a7aaf554745daf148adab9c
+      size: 2937
     - path: src/nsh_pipeline/modeling/dataset.py
       hash: md5
-      md5: 00cbc2aa2fbb67e4d827f910d28e19a1
-      size: 2356
+      md5: c08d6db2654c1ea3b179dbea92631a19
+      size: 2300
     - path: src/nsh_pipeline/modeling/features.py
       hash: md5
-      md5: 6b3393627c3433ea625df85f7c5cdeea
-      size: 3515
+      md5: 7d0b377a29cf9cc3732c9c039426ad40
+      size: 3451
     - path: src/nsh_pipeline/modeling/split.py
       hash: md5
-      md5: 69cd10a544bbefd86e30df21f1f76262
-      size: 2900
+      md5: 618606cc2ba539381b1fb25de417397d
+      size: 2836
     params:
       params.yaml:
         training_data:
@@ -246,6 +246,135 @@ stages:
     outs:
     - path: data/training
       hash: md5
-      md5: 48080b135591b76cfb62432ae85067f1.dir
-      size: 147931
+      md5: 8001fa2773546ab5ea399d95fe8145d5.dir
+      size: 147871
       nfiles: 4
+  train:
+    cmd: python -m nsh_pipeline.modeling.train --data-dir data/training --params
+      params.yaml
+    deps:
+    - path: data/training
+      hash: md5
+      md5: 8001fa2773546ab5ea399d95fe8145d5.dir
+      size: 147871
+      nfiles: 4
+    - path: src/nsh_pipeline/modeling/artifacts.py
+      hash: md5
+      md5: e235278b9b8d5b4a032f797cc0d29666
+      size: 2295
+    - path: src/nsh_pipeline/modeling/candidates.py
+      hash: md5
+      md5: 98aa8c795ca61db963d2936af101caf5
+      size: 3946
+    - path: src/nsh_pipeline/modeling/charts.py
+      hash: md5
+      md5: f2739068473aa2cd5e79243f7b639e86
+      size: 4108
+    - path: src/nsh_pipeline/modeling/select.py
+      hash: md5
+      md5: bb319f941ea8a600ba5e2aec4f26f4d4
+      size: 2639
+    - path: src/nsh_pipeline/modeling/tracking.py
+      hash: md5
+      md5: 4c9885d9468c63125112f15f9ec80155
+      size: 3483
+    - path: src/nsh_pipeline/modeling/train.py
+      hash: md5
+      md5: 90b56866467f22db956d3edf39e43e7f
+      size: 12207
+    - path: src/nsh_pipeline/modeling/tune.py
+      hash: md5
+      md5: 248416de0a694160d4c5b8721ac25746
+      size: 4697
+    params:
+      params.yaml:
+        model:
+          seed: 42
+          candidates:
+          - logistic_regression
+          - random_forest
+          - lightgbm
+          selection_metric: pr_auc
+          cv_folds: 5
+          n_trials: 25
+          models_dir: models
+          reports_dir: reports/model/training
+          mlflow:
+            experiment: nsh-denial-model
+            tracking_uri: sqlite:///mlflow.db
+            log_models: true
+          search_space:
+            logistic_regression:
+              C:
+                type: float
+                low: 0.001
+                high: 100.0
+                log: true
+              l1_ratio:
+                type: float
+                low: 0.0
+                high: 1.0
+            random_forest:
+              n_estimators:
+                type: int
+                low: 100
+                high: 500
+                step: 50
+              max_depth:
+                type: int
+                low: 3
+                high: 20
+              min_samples_leaf:
+                type: int
+                low: 1
+                high: 30
+              max_features:
+                type: categorical
+                choices:
+                - sqrt
+                - log2
+                - 0.5
+            lightgbm:
+              n_estimators:
+                type: int
+                low: 100
+                high: 600
+                step: 50
+              learning_rate:
+                type: float
+                low: 0.01
+                high: 0.3
+                log: true
+              num_leaves:
+                type: int
+                low: 8
+                high: 64
+              min_child_samples:
+                type: int
+                low: 5
+                high: 60
+              subsample:
+                type: float
+                low: 0.6
+                high: 1.0
+              colsample_bytree:
+                type: float
+                low: 0.6
+                high: 1.0
+              reg_lambda:
+                type: float
+                low: 0.001
+                high: 10.0
+                log: true
+        seed: 42
+    outs:
+    - path: models
+      hash: md5
+      md5: c1eb840d959f4fb7fa15be29fe2a27c2.dir
+      size: 1984343
+      nfiles: 8
+    - path: reports/model/training
+      hash: md5
+      md5: 7306dab593dbcd3ef2352e8305306567.dir
+      size: 132827
+      nfiles: 7
