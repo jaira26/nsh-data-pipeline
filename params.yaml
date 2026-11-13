@@ -98,3 +98,9 @@ denial_model:
   new_member: 0.8          # less than 180 days since hire
   prior_denial: 0.7        # per denial in the previous 90 days (counted up to 3)
   manual_claim: 0.3        # not a debit-card swipe
+
+# Model training set (phase 2): built from data/processed, split by service date.
+training_data:
+  validation_start: "2025-05-01"   # train = before this date
+  test_start: "2025-06-01"         # validation = May; test = from this date
+  out_dir: data/training

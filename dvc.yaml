@@ -79,3 +79,19 @@ stages:
           cache: false
       - reports/bias:
           cache: false
+
+
+  # Phase 2 (Jairaghavendra): features + label + time-based split for model training.
+  build_training_set:
+    cmd: python -m nsh_pipeline.modeling.build --processed-dir data/processed --raw-dir data/raw --params params.yaml
+    deps:
+      - data/raw
+      - data/processed
+      - src/nsh_pipeline/modeling/dataset.py
+      - src/nsh_pipeline/modeling/features.py
+      - src/nsh_pipeline/modeling/split.py
+      - src/nsh_pipeline/modeling/build.py
+    params:
+      - training_data
+    outs:
+      - data/training
