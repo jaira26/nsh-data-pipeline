@@ -95,3 +95,24 @@ stages:
       - training_data
     outs:
       - data/training
+
+  # Phase 2 (Kalpan): tune (Optuna + CV on train), refit, score on validation, select the best by
+  # validation PR-AUC. Every run tracked in MLflow (experiment nsh-denial-model). See docs/model_training.md.
+  train:
+    cmd: python -m nsh_pipeline.modeling.train --data-dir data/training --params params.yaml
+    deps:
+      - data/training
+      - src/nsh_pipeline/modeling/artifacts.py
+      - src/nsh_pipeline/modeling/candidates.py
+      - src/nsh_pipeline/modeling/charts.py
+      - src/nsh_pipeline/modeling/select.py
+      - src/nsh_pipeline/modeling/tracking.py
+      - src/nsh_pipeline/modeling/train.py
+      - src/nsh_pipeline/modeling/tune.py
+    params:
+      - seed
+      - model
+    outs:
+      - models                      # candidates/<name>/ + best/ (model.joblib + metadata.json)
+      - reports/model/training:     # candidates.json, comparison charts, tuning trials
+          cache: false

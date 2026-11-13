@@ -232,3 +232,9 @@ reports/run_summary.json
 # Injected-issue datasets for the M3/M5 detection evidence (params.injected.yaml); regenerate, never commit
 data/*_injected/
 reports/injected/
+
+# Model training (phase 2): models go to DVC / the registry, MLflow stores stay local
+/models
+mlflow.db
+mlruns/
+mlartifacts/

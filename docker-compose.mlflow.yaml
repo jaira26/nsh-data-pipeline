@@ -1,0 +1,18 @@
+# MLflow tracking server (phase 2, experiment nsh-denial-model). Separate from the Airflow compose file.
+#   docker compose -f docker-compose.mlflow.yaml up -d      # UI on http://localhost:5001
+#   export MLFLOW_TRACKING_URI=http://localhost:5001         # then train as usual
+# Runs and artifacts persist in the mlflow-data volume.
+name: nsh-mlflow          # own compose project, separate from the Airflow stack
+
+services:
+  mlflow:
+    build: docker/mlflow
+    image: nsh-mlflow:3.18.0
+    ports:
+      - "5001:5000"   # host 5001: macOS AirPlay Receiver already uses 5000
+    volumes:
+      - mlflow-data:/mlflow
+    restart: unless-stopped
+
+volumes:
+  mlflow-data:
