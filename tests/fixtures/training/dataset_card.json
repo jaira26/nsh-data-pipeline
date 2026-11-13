@@ -1,0 +1,26 @@
+{
+  "dataset": "training-sample-fixture",
+  "data_version": "sample",
+  "seed": 42,
+  "label": "denied",
+  "splits": {
+    "train": {
+      "rows": 428,
+      "positive_rate": 0.1051,
+      "start": "2025-01-01",
+      "end": "2025-04-30"
+    },
+    "validation": {
+      "rows": 117,
+      "positive_rate": 0.1111,
+      "start": "2025-05-01",
+      "end": "2025-05-31"
+    },
+    "test": {
+      "rows": 55,
+      "positive_rate": 0.1455,
+      "start": "2025-06-01",
+      "end": "2025-06-15"
+    }
+  }
+}
