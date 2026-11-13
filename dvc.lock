@@ -6,21 +6,21 @@ stages:
     deps:
     - path: src/nsh_pipeline/acquire
       hash: md5
-      md5: e3fc0eee63e7a54512ee4839d92fed9f.dir
-      size: 27859
-      nfiles: 8
+      md5: 2d62d9a78a01c8219be7ada8bf191865.dir
+      size: 17034
+      nfiles: 6
     - path: src/nsh_pipeline/generate
       hash: md5
-      md5: 6aa8922086c08bf1e61b87e15a2fbe38.dir
-      size: 163156
-      nfiles: 27
+      md5: 90f5f3d399ff75e23d9bf3189ad505ca.dir
+      size: 97500
+      nfiles: 18
     params:
       params.yaml:
         dataset:
           url: 
-            https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.0/nsh-raw-small-v1.0.tar.gz
+            https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.1/nsh-raw-small-v1.1.tar.gz
           sha256: 
-            e6871efbf48dd262990f4dbd417ee992a033d0aef0afab62fdea0fb8670fc69f
+            dfe340b8773d57a76ba3d205ac60d3ba55af0464bc332bc5d0334391c9f106c0
         inject_issues:
           enabled: false
           duplicate_bill_lines: 5
@@ -38,8 +38,8 @@ stages:
     outs:
     - path: data/raw
       hash: md5
-      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
-      size: 7813015
+      md5: 50dfc601d4638941a119b70024c12936.dir
+      size: 7761231
       nfiles: 10
   preprocess:
     cmd: python -m nsh_pipeline.preprocess.run --raw-dir data/raw --out-dir 
@@ -47,22 +47,22 @@ stages:
     deps:
     - path: data/raw
       hash: md5
-      md5: 25a7722c80ba2507b51544ee253b9d5e.dir
-      size: 7813015
+      md5: 50dfc601d4638941a119b70024c12936.dir
+      size: 7761231
       nfiles: 10
     - path: src/nsh_pipeline/preprocess
       hash: md5
-      md5: d935cdffebf1a883d3736a651d52940f.dir
-      size: 110863
-      nfiles: 24
+      md5: 9e35fe86b379faae68c3b23c7bb2b4b6.dir
+      size: 64803
+      nfiles: 16
     params:
       params.yaml:
         reference_date: '2025-06-15'
     outs:
     - path: data/processed
       hash: md5
-      md5: c296a81d12359267ca16027d7d53bf2e.dir
-      size: 387262
+      md5: 10a14d5f43d4b533be16bf7022a85b54.dir
+      size: 377774
       nfiles: 9
   validate:
     cmd: python -m nsh_pipeline.validation.run --step all --raw-dir data/raw 
@@ -207,3 +207,45 @@ stages:
       hash: md5
       md5: 9e50fd36fe7f810f40dcdc12d21addca
       size: 6581
+  build_training_set:
+    cmd: python -m nsh_pipeline.modeling.build --processed-dir data/processed 
+      --raw-dir data/raw --params params.yaml
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 10a14d5f43d4b533be16bf7022a85b54.dir
+      size: 377774
+      nfiles: 9
+    - path: data/raw
+      hash: md5
+      md5: 50dfc601d4638941a119b70024c12936.dir
+      size: 7761231
+      nfiles: 10
+    - path: src/nsh_pipeline/modeling/build.py
+      hash: md5
+      md5: 32bd3be3e0ec00c59fb09b1da7bcb9d8
+      size: 2997
+    - path: src/nsh_pipeline/modeling/dataset.py
+      hash: md5
+      md5: 00cbc2aa2fbb67e4d827f910d28e19a1
+      size: 2356
+    - path: src/nsh_pipeline/modeling/features.py
+      hash: md5
+      md5: 6b3393627c3433ea625df85f7c5cdeea
+      size: 3515
+    - path: src/nsh_pipeline/modeling/split.py
+      hash: md5
+      md5: 69cd10a544bbefd86e30df21f1f76262
+      size: 2900
+    params:
+      params.yaml:
+        training_data:
+          validation_start: '2025-05-01'
+          test_start: '2025-06-01'
+          out_dir: data/training
+    outs:
+    - path: data/training
+      hash: md5
+      md5: 48080b135591b76cfb62432ae85067f1.dir
+      size: 147931
+      nfiles: 4
