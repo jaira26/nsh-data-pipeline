@@ -1,12 +1,12 @@
 {
   "table": "ledger",
-  "row_count": 4404,
+  "row_count": 4256,
   "columns": {
     "txn_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 4404
+      "distinct": 4256
     },
     "client_id": {
       "kind": "text",
@@ -28,13 +28,13 @@
       "top": [
         {
           "value": "wex",
-          "count": 4347,
-          "share": 0.987057
+          "count": 4207,
+          "share": 0.988487
         },
         {
           "value": "manual",
-          "count": 57,
-          "share": 0.012943
+          "count": 49,
+          "share": 0.011513
         }
       ],
       "top_complete": true
@@ -43,11 +43,11 @@
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
-      "min": 2.5,
-      "max": 5000.0,
-      "mean": 125.150054,
-      "std": 181.010019,
-      "median": 72.87
+      "min": 2.88,
+      "max": 1868.93,
+      "mean": 120.067937,
+      "std": 151.83489,
+      "median": 71.04
     },
     "effective_date": {
       "kind": "datetime",
@@ -64,7 +64,7 @@
       "top": [
         {
           "value": "processed",
-          "count": 4404,
+          "count": 4256,
           "share": 1.0
         }
       ],
