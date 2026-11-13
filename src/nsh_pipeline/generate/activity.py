@@ -1,4 +1,5 @@
 """Synthetic member activity: card swipes (`wex-claims`), support tickets and manual claims."""
+import math
 from datetime import date, datetime, timedelta
 
 import numpy as np
@@ -8,7 +9,8 @@ from nsh_pipeline.preprocess.people_current import current_entry
 
 SWIPES_PER_MEMBER = 4.0          # Poisson mean per enrolled member
 SWIPE_STATUSES = ["Approved", "Denied", "Pended", "Partial"]
-SWIPE_STATUS_WEIGHTS = [0.88, 0.05, 0.04, 0.03]
+NON_DENIED_STATUSES = ["Approved", "Pended", "Partial"]
+NON_DENIED_WEIGHTS = np.array([0.88, 0.04, 0.03]) / 0.95
 SERVICE_CATEGORIES = ["Medical", "Drugs & Medicine", "Dental", "Vision"]
 SERVICE_CATEGORY_WEIGHTS = [0.55, 0.25, 0.12, 0.08]
 DEBIT_CARD_SHARE = 0.92
@@ -22,9 +24,48 @@ CLAIM_STATUSES = ["Approved", "Denied", "New", "In Progress", "Request More Info
 CLAIM_STATUS_WEIGHTS = [0.70, 0.10, 0.08, 0.07, 0.05]
 HIGH_DOLLAR = 1000.0
 
+# Defaults for params.yaml -> denial_model (see the comments there).
+DEFAULT_DENIAL_MODEL = {
+    "intercept": -3.3,
+    "log_amount": 0.6,
+    "category": {"Dental": 0.9, "Vision": 0.7, "Drugs & Medicine": -0.2},
+    "high_deductible": 0.5,
+    "new_member": 0.8,
+    "prior_denial": 0.7,
+    "manual_claim": 0.3,
+}
+HIGH_DEDUCTIBLE = 3000.0
+NEW_MEMBER_DAYS = 180
+PRIOR_DENIAL_WINDOW_DAYS = 90
+MAX_PRIOR_DENIALS = 3
+
 
 def _to_float(money: str) -> float:
     return float(money.replace(",", ""))
+
+
+def denial_probability(model: dict, amount: float, category: str, deductible: float,
+                       tenure_days: int, recent_denials: int, is_card: bool) -> float:
+    """Chance that a swipe is denied, from documented causes (no demographic effects)."""
+    logit = (
+        model["intercept"]
+        + model["log_amount"] * math.log(max(amount, 1.0) / 75)
+        + model["category"].get(category, 0.0)
+        + model["high_deductible"] * (deductible >= HIGH_DEDUCTIBLE)
+        + model["new_member"] * (tenure_days < NEW_MEMBER_DAYS)
+        + model["prior_denial"] * min(recent_denials, MAX_PRIOR_DENIALS)
+        + model["manual_claim"] * (not is_card)
+    )
+    return 1 / (1 + math.exp(-logit))
+
+
+def _plan_deductible(client: dict, benefit: dict) -> float:
+    plan = next(p for p in client["benefits"] if p["name"] == benefit["CoverageName"])
+    return float(plan["individualDeductibleString"])
+
+
+def _hire_date(person: dict) -> date:
+    return date.fromisoformat(current_entry(person["Employment"])["HireDate"][:10])
 
 
 def enrollments(clients: list[dict], people: list[dict], reference: date):
@@ -45,19 +86,36 @@ def enrollments(clients: list[dict], people: list[dict], reference: date):
             yield person, clients_by_id[person["Application"]], benefit, start, end
 
 
-def make_swipes(rng, fake, clients: list[dict], people: list[dict], reference: date) -> list[dict]:
-    """Debit-card swipes; swipes needing substantiation get a ticket number (NSET-xxxxx)."""
+def make_swipes(rng, fake, clients: list[dict], people: list[dict], reference: date,
+                denial_model: dict | None = None) -> list[dict]:
+    """Debit-card swipes; denial depends on amount, category, plan, tenure, history and channel.
+
+    Swipes needing substantiation get a ticket number (NSET-xxxxx).
+    """
+    model = {**DEFAULT_DENIAL_MODEL, **(denial_model or {})}
     kinds = rng.choice(["Family Medicine", "Pharmacy", "Dental", "Eye Care", "Urgent Care"], size=40)
     providers = [f"{fake.last_name()} {kind}" for kind in kinds]
     swipes, n_tickets = [], 0
-    for person, client, _benefit, start, end in enrollments(clients, people, reference):
-        for _ in range(int(rng.poisson(SWIPES_PER_MEMBER))):
+    for person, client, benefit, start, end in enrollments(clients, people, reference):
+        deductible = _plan_deductible(client, benefit)
+        hire = _hire_date(person)
+        service_dates = sorted(random_date(rng, start, end) for _ in range(int(rng.poisson(SWIPES_PER_MEMBER))))
+        denied_dates = []
+        for service_date in service_dates:
             n = len(swipes) + 1
             amount = round(float(np.clip(rng.lognormal(4.3, 1.0), 5, 5000)), 2)
-            status = str(rng.choice(SWIPE_STATUSES, p=SWIPE_STATUS_WEIGHTS))
+            category = str(rng.choice(SERVICE_CATEGORIES, p=SERVICE_CATEGORY_WEIGHTS))
+            is_card = bool(rng.random() < DEBIT_CARD_SHARE)
+            recent = sum(1 for d in denied_dates if 0 < (service_date - d).days <= PRIOR_DENIAL_WINDOW_DAYS)
+            p_deny = denial_probability(model, amount, category, deductible,
+                                        (service_date - hire).days, recent, is_card)
+            if rng.random() < p_deny:
+                status = "Denied"
+                denied_dates.append(service_date)
+            else:
+                status = str(rng.choice(NON_DENIED_STATUSES, p=NON_DENIED_WEIGHTS))
             paid = {"Approved": amount, "Partial": round(amount / 2, 2)}.get(status, 0.0)
             denied = amount if status == "Denied" else 0.0
-            is_card = bool(rng.random() < DEBIT_CARD_SHARE)
             needs_sub = bool(is_card and paid > 0 and rng.random() < SUBSTANTIATION_RATE)
             ticket = None
             if needs_sub:
@@ -70,13 +128,13 @@ def make_swipes(rng, fake, clients: list[dict], people: list[dict], reference: d
                 "clientId": client["_id"],
                 "employeeId": person["_id"],
                 "alias": client["employer"]["claimReferenceId"],
-                "date_of_service": iso(random_date(rng, start, end)),
+                "date_of_service": iso(service_date),
                 "provider": providers[int(rng.integers(len(providers)))],
                 "amount": money_str(amount),
                 "paid_amt": money_str(paid),
                 "denied_amt": money_str(denied),
                 "claim_status": status,
-                "service_category": str(rng.choice(SERVICE_CATEGORIES, p=SERVICE_CATEGORY_WEIGHTS)),
+                "service_category": category,
                 "claim_source_desc": "Debit card" if is_card else "Manual",
                 "needsSubstantion": needs_sub,  # (sic) misspelled in the real data
                 "ticketNumber": ticket,

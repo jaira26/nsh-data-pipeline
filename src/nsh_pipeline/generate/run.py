@@ -41,7 +41,7 @@ def build_collections(params: dict) -> tuple[dict[str, list[dict]], list[dict]]:
 
     clients = make_clients(rng, fake, scale["clients"], reference)
     people = make_people(rng, fake, clients, reference, scale["max_members_per_client"])
-    swipes = make_swipes(rng, fake, clients, people, reference)
+    swipes = make_swipes(rng, fake, clients, people, reference, params.get("denial_model"))
     if enabled and inject.get("denial_skew"):
         skew = inject["denial_skew"]
         issues.append(skew_denials(inject_rng, swipes, clients, skew["state"], skew["rate"]))

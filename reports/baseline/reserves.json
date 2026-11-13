@@ -19,11 +19,11 @@
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
-      "min": 6887.28,
-      "max": 112428.66,
-      "mean": 34211.936333,
-      "std": 16865.104505,
-      "median": 33679.075
+      "min": 6154.17,
+      "max": 113606.7,
+      "mean": 34887.456167,
+      "std": 15690.414025,
+      "median": 34277.73
     },
     "reserves_billed_usd": {
       "kind": "number",
@@ -40,10 +40,10 @@
       "null_count": 0,
       "null_rate": 0.0,
       "min": 0.0,
-      "max": 18363.85,
-      "mean": 1480.338667,
-      "std": 2370.652998,
-      "median": 798.585
+      "max": 17347.4,
+      "mean": 1369.704667,
+      "std": 2233.894739,
+      "median": 669.795
     },
     "return_of_reserve_usd": {
       "kind": "number",

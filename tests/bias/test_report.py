@@ -1,4 +1,5 @@
 import copy
+import re
 
 import pytest
 
@@ -16,7 +17,7 @@ def test_report_explains_flag_mitigation_and_team_assumptions(injected_result, i
     assert "**Flagged: state = CA**" in report
     assert "`denial_skew` flipped 30% of approved swipes in state CA to Denied. Detected." in report
     assert "Reweighing on `state`" in report and "Trade-off" in report
-    assert "is_vip = True (n = 10)" in report  # too small to judge
+    assert re.search(r"Too small to judge.*is_vip = True \(n = \d+\)", report)  # any count; must be marked too small
     for decision in ("decision #3", "decision #4", "decision #10"):  # assumptions M5 must mention
         assert decision in report
     assert report.index("group_size_bucket = 25-49") < report.index("group_size_bucket = 100-249")  # size order

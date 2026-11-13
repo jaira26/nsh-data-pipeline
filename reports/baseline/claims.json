@@ -1,18 +1,18 @@
 {
   "table": "claims",
-  "row_count": 76,
+  "row_count": 66,
   "columns": {
     "claim_number": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 76
+      "distinct": 66
     },
     "member_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 76
+      "distinct": 66
     },
     "client_id": {
       "kind": "text",
@@ -21,29 +21,29 @@
       "distinct": 34,
       "top": [
         {
-          "value": "a00000000000000000000023",
-          "count": 13,
-          "share": 0.171053
-        },
-        {
-          "value": "a00000000000000000000048",
-          "count": 9,
-          "share": 0.118421
-        },
-        {
           "value": "a00000000000000000000021",
+          "count": 8,
+          "share": 0.121212
+        },
+        {
+          "value": "a00000000000000000000023",
           "count": 7,
-          "share": 0.092105
+          "share": 0.106061
         },
         {
-          "value": "a00000000000000000000032",
+          "value": "a00000000000000000000004",
           "count": 4,
-          "share": 0.052632
+          "share": 0.060606
         },
         {
-          "value": "a00000000000000000000003",
+          "value": "a00000000000000000000024",
+          "count": 4,
+          "share": 0.060606
+        },
+        {
+          "value": "a00000000000000000000042",
           "count": 3,
-          "share": 0.039474
+          "share": 0.045455
         }
       ],
       "top_complete": false
@@ -56,23 +56,23 @@
       "top": [
         {
           "value": "Medical",
-          "count": 34,
-          "share": 0.447368
+          "count": 38,
+          "share": 0.575758
         },
         {
           "value": "Drugs & Medicine",
-          "count": 24,
-          "share": 0.315789
+          "count": 14,
+          "share": 0.212121
         },
         {
           "value": "Dental",
-          "count": 12,
-          "share": 0.157895
+          "count": 10,
+          "share": 0.151515
         },
         {
           "value": "Vision",
-          "count": 6,
-          "share": 0.078947
+          "count": 4,
+          "share": 0.060606
         }
       ],
       "top_complete": true
@@ -81,30 +81,30 @@
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
-      "min": 36.5,
-      "max": 4639.59,
-      "mean": 390.616579,
-      "std": 620.697497,
-      "median": 219.22
+      "min": 44.72,
+      "max": 1868.93,
+      "mean": 352.014697,
+      "std": 339.678674,
+      "median": 231.455
     },
     "approved_usd": {
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
       "min": 0.0,
-      "max": 2025.82,
-      "mean": 224.799079,
-      "std": 315.004467,
-      "median": 163.34
+      "max": 1868.93,
+      "mean": 247.013182,
+      "std": 323.82593,
+      "median": 130.77
     },
     "denied_usd": {
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
       "min": 0.0,
-      "max": 473.88,
-      "mean": 28.698421,
-      "std": 90.606598,
+      "max": 1373.38,
+      "mean": 42.532424,
+      "std": 183.800572,
       "median": 0.0
     },
     "status": {
@@ -115,28 +115,28 @@
       "top": [
         {
           "value": "Approved",
-          "count": 50,
-          "share": 0.657895
+          "count": 45,
+          "share": 0.681818
         },
         {
           "value": "Denied",
           "count": 8,
-          "share": 0.105263
+          "share": 0.121212
         },
         {
           "value": "New",
-          "count": 8,
-          "share": 0.105263
+          "count": 7,
+          "share": 0.106061
         },
         {
-          "value": "Request More Info",
-          "count": 5,
-          "share": 0.065789
+          "value": "In Progress",
+          "count": 4,
+          "share": 0.060606
         },
         {
           "value": "Approved - High Dollar",
-          "count": 3,
-          "share": 0.039474
+          "count": 1,
+          "share": 0.015152
         }
       ],
       "top_complete": false
@@ -145,27 +145,22 @@
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 4,
+      "distinct": 3,
       "top": [
         {
           "value": "Standard",
-          "count": 62,
-          "share": 0.815789
-        },
-        {
-          "value": "High Dollar",
-          "count": 6,
-          "share": 0.078947
-        },
-        {
-          "value": "Potential Duplicate",
-          "count": 5,
-          "share": 0.065789
+          "count": 57,
+          "share": 0.863636
         },
         {
           "value": "Needs Review",
+          "count": 6,
+          "share": 0.090909
+        },
+        {
+          "value": "High Dollar",
           "count": 3,
-          "share": 0.039474
+          "share": 0.045455
         }
       ],
       "top_complete": true
@@ -178,18 +173,18 @@
       "top": [
         {
           "value": "Medium",
-          "count": 41,
-          "share": 0.539474
+          "count": 36,
+          "share": 0.545455
         },
         {
           "value": "Low",
-          "count": 29,
-          "share": 0.381579
+          "count": 27,
+          "share": 0.409091
         },
         {
           "value": "High",
-          "count": 6,
-          "share": 0.078947
+          "count": 3,
+          "share": 0.045455
         }
       ],
       "top_complete": true
@@ -198,15 +193,15 @@
       "kind": "datetime",
       "null_count": 0,
       "null_rate": 0.0,
-      "min": "2025-01-08T00:00:00+00:00",
-      "max": "2025-06-20T00:00:00+00:00"
+      "min": "2025-01-05T00:00:00+00:00",
+      "max": "2025-06-25T00:00:00+00:00"
     },
     "closed_at": {
       "kind": "datetime",
-      "null_count": 15,
-      "null_rate": 0.197368,
-      "min": "2025-01-12T00:00:00+00:00",
-      "max": "2025-07-10T00:00:00+00:00"
+      "null_count": 12,
+      "null_rate": 0.181818,
+      "min": "2025-01-17T00:00:00+00:00",
+      "max": "2025-07-14T00:00:00+00:00"
     }
   }
 }

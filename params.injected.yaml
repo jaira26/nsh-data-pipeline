@@ -33,8 +33,8 @@ inject_issues:
 # Where data acquisition downloads the raw dataset from (a GitHub Release asset).
 # Leave url empty to generate the data locally from the seed instead.
 dataset:
-  url: "https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.0/nsh-raw-small-v1.0.tar.gz"
-  sha256: "e6871efbf48dd262990f4dbd417ee992a033d0aef0afab62fdea0fb8670fc69f"
+  url: "https://github.com/jaira26/nsh-data-pipeline/releases/download/data-v1.1/nsh-raw-small-v1.1.tar.gz"
+  sha256: "dfe340b8773d57a76ba3d205ac60d3ba55af0464bc332bc5d0334391c9f106c0"
 
 # Bias detection by data slicing (M5). Swipe outcomes (denial rate, substantiation rate) are
 # compared across the client and member subgroups below. A slice is flagged when it is worse off
@@ -85,3 +85,19 @@ validation:
       table: swipes
       column: status
       value: Denied
+
+
+# How likely a swipe is to be denied (generator, from data-v1.1).
+# Effects add up on the log-odds scale; probability = 1 / (1 + exp(-total)).
+# No effect for state, age, gender or VIP: the clean data is fair by design.
+denial_model:
+  intercept: -3.3
+  log_amount: 0.6          # per unit of log(amount / $75): bigger charges, more denials
+  category:                # Medical is the baseline (0)
+    Dental: 0.9
+    Vision: 0.7
+    Drugs & Medicine: -0.2
+  high_deductible: 0.5     # plan deductible >= $3,000
+  new_member: 0.8          # less than 180 days since hire
+  prior_denial: 0.7        # per denial in the previous 90 days (counted up to 3)
+  manual_claim: 0.3        # not a debit-card swipe
