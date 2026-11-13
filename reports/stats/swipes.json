@@ -1,18 +1,18 @@
 {
   "table": "swipes",
-  "row_count": 4811,
+  "row_count": 4881,
   "columns": {
     "swipe_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 4811
+      "distinct": 4881
     },
     "member_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 1191
+      "distinct": 1192
     },
     "client_id": {
       "kind": "text",
@@ -24,7 +24,7 @@
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 1191
+      "distinct": 1192
     },
     "service_date": {
       "kind": "datetime",
@@ -38,29 +38,29 @@
       "null_count": 0,
       "null_rate": 0.0,
       "min": 5.0,
-      "max": 5000.0,
-      "mean": 123.93275,
-      "std": 175.018883,
-      "median": 73.59
+      "max": 1653.41,
+      "mean": 125.276974,
+      "std": 154.79901,
+      "median": 75.97
     },
     "paid_usd": {
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
       "min": 0.0,
-      "max": 5000.0,
-      "mean": 110.771549,
-      "std": 172.111097,
-      "median": 61.93
+      "max": 1653.41,
+      "mean": 101.023085,
+      "std": 141.395896,
+      "median": 56.94
     },
     "denied_usd": {
       "kind": "number",
       "null_count": 0,
       "null_rate": 0.0,
       "min": 0.0,
-      "max": 1633.18,
-      "mean": 6.847102,
-      "std": 48.403945,
+      "max": 1557.63,
+      "mean": 18.347601,
+      "std": 85.016961,
       "median": 0.0
     },
     "status": {
@@ -71,23 +71,23 @@
       "top": [
         {
           "value": "Approved",
-          "count": 4212,
-          "share": 0.875494
+          "count": 4055,
+          "share": 0.830772
         },
         {
           "value": "Denied",
-          "count": 259,
-          "share": 0.053835
+          "count": 500,
+          "share": 0.102438
         },
         {
           "value": "Pended",
-          "count": 205,
-          "share": 0.042611
+          "count": 174,
+          "share": 0.035648
         },
         {
           "value": "Partial",
-          "count": 135,
-          "share": 0.028061
+          "count": 152,
+          "share": 0.031141
         }
       ],
       "top_complete": true
@@ -100,23 +100,23 @@
       "top": [
         {
           "value": "Medical",
-          "count": 2621,
-          "share": 0.544793
+          "count": 2686,
+          "share": 0.550297
         },
         {
           "value": "Drugs & Medicine",
-          "count": 1238,
-          "share": 0.257327
+          "count": 1197,
+          "share": 0.245237
         },
         {
           "value": "Dental",
-          "count": 553,
-          "share": 0.114945
+          "count": 624,
+          "share": 0.127843
         },
         {
           "value": "Vision",
-          "count": 399,
-          "share": 0.082935
+          "count": 374,
+          "share": 0.076624
         }
       ],
       "top_complete": true
@@ -125,19 +125,19 @@
       "kind": "bool",
       "null_count": 0,
       "null_rate": 0.0,
-      "true_rate": 0.922677
+      "true_rate": 0.927269
     },
     "needs_substantiation": {
       "kind": "bool",
       "null_count": 0,
       "null_rate": 0.0,
-      "true_rate": 0.020994
+      "true_rate": 0.021307
     },
     "ticket_number": {
       "kind": "text",
-      "null_count": 4710,
-      "null_rate": 0.979006,
-      "distinct": 101
+      "null_count": 4777,
+      "null_rate": 0.978693,
+      "distinct": 104
     }
   }
 }

@@ -28,6 +28,7 @@ it, cleans it into reporting tables, checks it for anomalies and bias, and versi
 15. [Known limitations](#15-known-limitations)
 16. [Troubleshooting](#16-troubleshooting)
 17. [Team contributions](#17-team-contributions)
+18. [Model training, tuning & selection (phase 2)](#18-model-training-tuning--selection-phase-2)
 
 ---
 
@@ -586,7 +587,103 @@ Full list: [docs/decisions.md](docs/decisions.md).
 | Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
 | Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
 | Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
+| Model training, tuning, selection & MLflow (phase 2) | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `modeling/{candidates,tune,train,select,tracking,artifacts,charts}.py`, MLflow server |
 | Testing framework, bias & documentation | Het Prajapati ([@Het415](https://github.com/Het415)), Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `tests/` setup, CI, `bias/`, README, `docs/` |
+
+---
+
+## 18. Model training, tuning & selection (phase 2)
+
+Owner: Kalpan Shah · Guidelines §2.2, §3, §4, §8.3 · Details: [docs/model_training.md](docs/model_training.md)
+
+**Task:** predict whether a card swipe will be **denied** (binary; `denied = 1`), trained on the
+time-based splits of release `data-v1.1` (train Jan–Apr, validation May, test June).
+**Primary metric:** PR-AUC, because denials are a minority class (~13% of validation swipes).
+
+### How to run
+
+```bash
+# optional: MLflow tracking server in Docker (UI on http://localhost:5001; 5000 is taken by macOS AirPlay)
+docker compose -f docker-compose.mlflow.yaml up -d --build
+export MLFLOW_TRACKING_URI=http://localhost:5001   # unset = local sqlite:///mlflow.db
+
+dvc repro train          # or: python -m nsh_pipeline.modeling.train --data-dir data/training --params params.yaml
+```
+
+One command tunes, trains, scores and selects:
+
+```
+train split ──► Optuna TPE search (25 trials, stratified 5-fold CV, PR-AUC) ──► best params per model
+            └─► refit on the whole train split ──► score on validation ──► models/candidates/<name>/
+3 candidates ──► best validation PR-AUC ──► models/best/  (+ charts, candidates.json, MLflow)
+```
+
+The test split is never used here; it is kept for hold-out validation (step 3).
+
+### Candidates and search space
+
+All three are scikit-learn Pipelines with the same preprocessing (median impute + scale numerics,
+one-hot categoricals) and class weights for the imbalance. Search spaces live in `params.yaml → model.search_space`.
+
+| Model | Tuned hyperparameters |
+|---|---|
+| Logistic regression | `C` (0.001–100, log), `l1_ratio` (0–1) |
+| Random forest | `n_estimators` (100–500), `max_depth` (3–20), `min_samples_leaf` (1–30), `max_features` |
+| LightGBM | `n_estimators`, `learning_rate` (log), `num_leaves`, `min_child_samples`, `subsample`, `colsample_bytree`, `reg_lambda` (log) |
+
+### Results (data-v1.1, small scale, validation split)
+
+| Model | CV PR-AUC (train) | **Val PR-AUC** | Val ROC-AUC | Precision | Recall | F1 |
+|---|---|---|---|---|---|---|
+| **Logistic regression ★ selected** | 0.191 | **0.225** | 0.665 | 0.213 | 0.584 | 0.312 |
+| Random forest | 0.224 | 0.215 | 0.678 | 0.231 | 0.606 | 0.335 |
+| LightGBM | 0.222 | 0.208 | 0.674 | 0.231 | 0.591 | 0.332 |
+
+Random guessing scores a PR-AUC equal to the denial rate (0.131), so every model learns a real signal
+(≈1.7× better). Precision / recall / F1 are at each model's best-F1 threshold on validation; the official
+decision threshold is set in the validation step. The three families are close: the signal in the
+synthetic data is mostly linear, so the simplest model wins on validation.
+
+![Model comparison](reports/model/training/model_comparison.png)
+
+![Confusion matrices](reports/model/training/confusion_matrices.png)
+
+![Precision-recall curves](reports/model/training/pr_curves.png)
+
+### Experiment tracking (MLflow)
+
+Experiment `nsh-denial-model`. Each training command logs one `train-and-select` run with a child run per
+candidate and a grandchild run per Optuna trial (79 runs: 1 + 3 + 3 × 25). Every run is tagged with
+`data_version` and `git_sha`; candidates log their parameters, CV and validation metrics, the tuning table
+and the fitted model.
+
+| | |
+|---|---|
+| Runs: selection → candidates → tuning trials | ![MLflow runs](docs/model_training/mlflow_runs.png) |
+| Candidates compared side by side | ![MLflow compare](docs/model_training/mlflow_compare.png) |
+| Selected run: params, metrics, `data_version` / `git_sha` tags | ![MLflow run detail](docs/model_training/mlflow_run_detail.png) |
+| Charts logged as run artifacts | ![MLflow artifacts](docs/model_training/mlflow_artifacts.png) |
+| Hyperparameter search (parallel coordinates) | ![MLflow tuning](docs/model_training/mlflow_tuning.png) |
+
+### Outputs (model contract)
+
+```
+models/candidates/<model_name>/model.joblib + metadata.json   # every candidate (DVC, not Git)
+models/best/model.joblib + metadata.json                      # selected model (DVC, not Git)
+reports/model/training/candidates.json                        # ranking, params, metrics, MLflow run ids
+reports/model/training/trials/<model>.csv                     # every tuning trial (sensitivity analysis)
+```
+
+```python
+from nsh_pipeline.modeling.artifacts import load_model
+from nsh_pipeline.modeling.dataset import FEATURE_COLUMNS, load_split
+
+model, metadata = load_model("models/best")
+scores = model.predict_proba(load_split("test")[FEATURE_COLUMNS])[:, 1]
+```
+
+Tests: `pytest tests/modeling` (offline, on the sample fixture). Modelling decisions: rows 27–34 in
+[docs/decisions.md](docs/decisions.md).
 
 ---
 

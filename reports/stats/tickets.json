@@ -1,49 +1,49 @@
 {
   "table": "tickets",
-  "row_count": 182,
+  "row_count": 166,
   "columns": {
     "ticket_number": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 182
+      "distinct": 166
     },
     "member_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 179
+      "distinct": 159
     },
     "client_id": {
       "kind": "text",
       "null_count": 0,
       "null_rate": 0.0,
-      "distinct": 50,
+      "distinct": 46,
       "top": [
         {
-          "value": "a00000000000000000000023",
-          "count": 23,
-          "share": 0.126374
+          "value": "a00000000000000000000048",
+          "count": 19,
+          "share": 0.114458
         },
         {
-          "value": "a00000000000000000000048",
-          "count": 14,
-          "share": 0.076923
+          "value": "a00000000000000000000023",
+          "count": 15,
+          "share": 0.090361
         },
         {
           "value": "a00000000000000000000021",
-          "count": 13,
-          "share": 0.071429
+          "count": 14,
+          "share": 0.084337
         },
         {
           "value": "a00000000000000000000057",
-          "count": 10,
-          "share": 0.054945
+          "count": 12,
+          "share": 0.072289
         },
         {
-          "value": "a00000000000000000000011",
-          "count": 8,
-          "share": 0.043956
+          "value": "a00000000000000000000009",
+          "count": 7,
+          "share": 0.042169
         }
       ],
       "top_complete": false
@@ -56,42 +56,42 @@
       "top": [
         {
           "value": "Claim",
-          "count": 101,
-          "share": 0.554945
+          "count": 104,
+          "share": 0.626506
         },
         {
           "value": "Customer Support",
-          "count": 24,
-          "share": 0.131868
-        },
-        {
-          "value": "Technical Support",
-          "count": 22,
-          "share": 0.120879
-        },
-        {
-          "value": "General Questions",
-          "count": 20,
-          "share": 0.10989
+          "count": 18,
+          "share": 0.108434
         },
         {
           "value": "Member Advocacy",
+          "count": 16,
+          "share": 0.096386
+        },
+        {
+          "value": "General Questions",
           "count": 15,
-          "share": 0.082418
+          "share": 0.090361
+        },
+        {
+          "value": "Technical Support",
+          "count": 13,
+          "share": 0.078313
         }
       ],
       "top_complete": true
     },
     "category": {
       "kind": "text",
-      "null_count": 81,
-      "null_rate": 0.445055,
+      "null_count": 62,
+      "null_rate": 0.373494,
       "distinct": 1,
       "top": [
         {
           "value": "Substantiation",
-          "count": 101,
-          "share": 0.554945
+          "count": 104,
+          "share": 0.626506
         }
       ],
       "top_complete": true
@@ -104,28 +104,28 @@
       "top": [
         {
           "value": "Closed",
-          "count": 96,
-          "share": 0.527473
+          "count": 86,
+          "share": 0.518072
         },
         {
           "value": "Waiting on Member",
-          "count": 41,
-          "share": 0.225275
-        },
-        {
-          "value": "In Progress",
-          "count": 18,
-          "share": 0.098901
+          "count": 39,
+          "share": 0.23494
         },
         {
           "value": "New",
-          "count": 18,
-          "share": 0.098901
+          "count": 19,
+          "share": 0.114458
+        },
+        {
+          "value": "In Progress",
+          "count": 16,
+          "share": 0.096386
         },
         {
           "value": "On Hold",
-          "count": 9,
-          "share": 0.049451
+          "count": 6,
+          "share": 0.036145
         }
       ],
       "top_complete": true
@@ -138,18 +138,18 @@
       "top": [
         {
           "value": "Medium",
-          "count": 100,
-          "share": 0.549451
+          "count": 97,
+          "share": 0.584337
         },
         {
           "value": "Low",
-          "count": 49,
-          "share": 0.269231
+          "count": 38,
+          "share": 0.228916
         },
         {
           "value": "High",
-          "count": 33,
-          "share": 0.181319
+          "count": 31,
+          "share": 0.186747
         }
       ],
       "top_complete": true
@@ -164,21 +164,21 @@
       "kind": "datetime",
       "null_count": 0,
       "null_rate": 0.0,
-      "min": "2025-01-03T17:00:00+00:00",
+      "min": "2025-01-01T14:00:00+00:00",
       "max": "2025-06-15T08:00:00+00:00"
     },
     "closed_at": {
       "kind": "datetime",
-      "null_count": 86,
-      "null_rate": 0.472527,
-      "min": "2025-01-06T14:24:05+00:00",
-      "max": "2025-06-16T20:35:15+00:00"
+      "null_count": 80,
+      "null_rate": 0.481928,
+      "min": "2025-01-02T04:01:02+00:00",
+      "max": "2025-06-18T13:13:03+00:00"
     },
     "sla_breached": {
       "kind": "bool",
       "null_count": 0,
       "null_rate": 0.0,
-      "true_rate": 0.620879
+      "true_rate": 0.63253
     }
   }
 }
