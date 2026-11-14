@@ -116,3 +116,40 @@ stages:
       - models                      # candidates/<name>/ + best/ (model.joblib + metadata.json)
       - reports/model/training:     # candidates.json, comparison charts, tuning trials
           cache: false
+
+  # Phase 2 (Raj): hold-out validation of models/best. Threshold chosen on the validation split, metrics on the
+  # test split, gate from params.yaml -> model_validation (exit code 1 = gate failed, so `dvc repro` and CI stop).
+  # Named validate_model because `validate` is M3's data validation. See docs/model_validation.md.
+  validate_model:
+    cmd: python -m nsh_pipeline.modeling.evaluate --params params.yaml --model-dir models/best --data-dir data/training --out-dir reports/model
+    deps:
+      - data/training
+      - models/best
+      - src/nsh_pipeline/modeling/evaluate.py
+      - src/nsh_pipeline/modeling/validation_plots.py
+    params:
+      - model_validation
+      - model.mlflow
+    metrics:
+      - reports/model/validation.json:
+          cache: false
+    plots:
+      - reports/model/validation:
+          cache: false
+
+  # Phase 2 (Raj): SHAP on the test split + hyperparameter sensitivity from the MLflow tuning runs.
+  # The MLflow store is not a DVC dependency; the stage reruns when the model (i.e. a new training run) changes.
+  sensitivity:
+    cmd: python -m nsh_pipeline.modeling.sensitivity --params params.yaml --model-dir models/best --data-dir data/training --out-dir reports/model/sensitivity
+    deps:
+      - data/training
+      - models/best
+      - reports/model/validation.json     # the chosen threshold (local explanations)
+      - src/nsh_pipeline/modeling/sensitivity.py
+    params:
+      - model_validation
+      - model.mlflow
+      - model.search_space
+    outs:
+      - reports/model/sensitivity:
+          cache: false

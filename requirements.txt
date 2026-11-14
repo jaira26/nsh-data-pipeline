@@ -87,6 +87,7 @@ cloudpickle==3.1.2
     # via
     #   joblib
     #   mlflow-skinny
+    #   shap
 colorama==0.4.6
     # via
     #   colorlog
@@ -295,6 +296,14 @@ lazy-importer==0.1.0 ; python_full_version < '3.15'
     # via importlib-metadata
 lightgbm==4.7.0
     # via nsh-pipeline (pyproject.toml)
+llvmlite==0.45.1 ; platform_machine == 'x86_64' and sys_platform == 'darwin'
+    # via
+    #   numba
+    #   shap
+llvmlite==0.50.0 ; platform_machine != 'x86_64' or sys_platform != 'darwin'
+    # via
+    #   numba
+    #   shap
 mako==1.4.3
     # via alembic
 markdown-it-py==4.2.0
@@ -332,7 +341,11 @@ networkx==3.6.1 ; python_full_version < '3.12'
     # via dvc
 networkx==3.7 ; python_full_version >= '3.12'
     # via dvc
-numpy==2.4.6 ; python_full_version < '3.12'
+numba==0.62.1 ; platform_machine == 'x86_64' and sys_platform == 'darwin'
+    # via shap
+numba==0.68.1 ; platform_machine != 'x86_64' or sys_platform != 'darwin'
+    # via shap
+numpy==2.3.5 ; platform_machine == 'x86_64' and sys_platform == 'darwin'
     # via
     #   nsh-pipeline (pyproject.toml)
     #   contourpy
@@ -340,13 +353,15 @@ numpy==2.4.6 ; python_full_version < '3.12'
     #   lightgbm
     #   matplotlib
     #   mlflow
+    #   numba
     #   optuna
     #   pandas
     #   pandera
     #   scikit-learn
     #   scipy
+    #   shap
     #   skops
-numpy==2.5.4 ; python_full_version >= '3.12'
+numpy==2.4.6 ; (python_full_version < '3.12' and platform_machine != 'x86_64') or (python_full_version < '3.12' and sys_platform != 'darwin')
     # via
     #   nsh-pipeline (pyproject.toml)
     #   contourpy
@@ -354,11 +369,29 @@ numpy==2.5.4 ; python_full_version >= '3.12'
     #   lightgbm
     #   matplotlib
     #   mlflow
+    #   numba
     #   optuna
     #   pandas
     #   pandera
     #   scikit-learn
     #   scipy
+    #   shap
+    #   skops
+numpy==2.5.4 ; (python_full_version >= '3.12' and platform_machine != 'x86_64') or (python_full_version >= '3.12' and sys_platform != 'darwin')
+    # via
+    #   nsh-pipeline (pyproject.toml)
+    #   contourpy
+    #   fairlearn
+    #   lightgbm
+    #   matplotlib
+    #   mlflow
+    #   numba
+    #   optuna
+    #   pandas
+    #   pandera
+    #   scikit-learn
+    #   scipy
+    #   shap
     #   skops
 oauthlib==4.0.0
     # via requests-oauthlib
@@ -401,6 +434,7 @@ packaging==26.3
     #   optuna
     #   pandera
     #   pytest
+    #   shap
     #   skops
 pandas==3.1.0
     # via
@@ -408,6 +442,7 @@ pandas==3.1.0
     #   fairlearn
     #   mlflow
     #   pandera
+    #   shap
 pandera==0.34.1
     # via nsh-pipeline (pyproject.toml)
 pathspec==1.1.1
@@ -546,6 +581,7 @@ scikit-learn==1.9.1
     #   nsh-pipeline (pyproject.toml)
     #   fairlearn
     #   mlflow
+    #   shap
     #   skops
 scipy==1.17.1
     # via
@@ -554,6 +590,7 @@ scipy==1.17.1
     #   lightgbm
     #   mlflow
     #   scikit-learn
+    #   shap
     #   skops
 scmrepo==3.6.2
     # via
@@ -563,6 +600,8 @@ semver==3.1.0
     # via gto
 setuptools==84.2.1
     # via zc-lockfile
+shap==0.51.0
+    # via nsh-pipeline (pyproject.toml)
 shortuuid==1.0.13
     # via
     #   dvc
@@ -573,6 +612,8 @@ six==1.17.0
     # via python-dateutil
 skops==0.16.0
     # via mlflow
+slicer==0.0.8
+    # via shap
 smmap==5.0.3
     # via gitdb
 sqlalchemy==2.1.8
@@ -603,6 +644,7 @@ tqdm==4.70.1
     #   fsspec
     #   optuna
     #   scmrepo
+    #   shap
 typeguard==4.6.0
     # via pandera
 typing-extensions==4.16.0
@@ -625,6 +667,7 @@ typing-extensions==4.16.0
     #   pydantic
     #   pydantic-core
     #   pydantic-settings
+    #   shap
     #   sqlalchemy
     #   starlette
     #   typeguard
