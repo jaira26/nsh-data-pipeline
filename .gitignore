@@ -238,3 +238,8 @@ reports/injected/
 mlflow.db
 mlruns/
 mlartifacts/
+
+# Model validation + sensitivity (phase 2): generated from real data by `dvc repro validate_model sensitivity`
+reports/model/validation.json
+reports/model/validation/
+reports/model/sensitivity/
