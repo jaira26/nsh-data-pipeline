@@ -184,3 +184,25 @@ stages:
       - reports/model/bias:      # bias_report.md, slice_metrics.csv, charts
           cache: false
       - models_mitigated         # <name>_reweighed/ model.joblib + metadata.json (same contract as models/)
+
+  # Phase 2 (Hiral): push the model the bias stage selected to the registry, or keep production (rollback).
+  # Promotes only when both gates passed and the candidate beats production re-scored on the same test split.
+  # Backend: params.yaml -> registry.backend (local folder registry/) or REGISTRY_BACKEND=gcp (CI on main).
+  # Exit 0 for promote and keep; the decision is in reports/model/registry_decision.json. See docs/model_registry.md.
+  register:
+    cmd: python -m nsh_pipeline.registry.promote --params params.yaml --reports-dir reports/model --data-dir data/training
+    deps:
+      - data/training
+      - models
+      - models_mitigated
+      - reports/model/validation.json
+      - reports/model/bias.json
+      - reports/model/sensitivity        # not read; makes `dvc repro register` run the whole model pipeline
+      - src/nsh_pipeline/registry
+    params:
+      - registry
+      - model_validation
+    outs:
+      - reports/model/registry_decision.json:
+          cache: false
+    always_changed: true                 # production lives in the registry, outside DVC: always re-decide

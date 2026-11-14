@@ -199,3 +199,21 @@ model_bias:
   mitigated_models_dir: models_mitigated   # <name>_reweighed/ in the model contract layout
   mlflow:
     enabled: true                  # store + experiment come from model.mlflow
+
+# Model registry, promotion / rollback and alerts (phase 2, Hiral). See docs/model_registry.md.
+# Promote only if the validation and bias gates passed, the selected model (bias.json) meets the
+# model_validation minimums, and it beats production on `metric` by more than min_improvement.
+# Production is re-scored on the current test split so both models are compared on the same rows.
+registry:
+  backend: local                   # local | gcp; REGISTRY_BACKEND overrides (CI on main sets gcp)
+  local_dir: registry              # local backend: versions/<version>/bundle.tar.gz, production.json, history.jsonl
+  production_file: registry/production.json   # current production record (local mirror for every backend)
+  decision_file: reports/model/registry_decision.json
+  metric: pr_auc
+  min_improvement: 0.0
+  rescore_production: true
+  alerts: true                     # Slack / email from .env (SLACK_WEBHOOK_URL, SMTP_*); logged when unset
+  gcp:                             # project from GCP_PROJECT_ID (env, never committed)
+    location: us-east1             # GCP_REGION overrides
+    repository: nsh-models         # GCP_AR_REPOSITORY overrides; generic-format Artifact Registry repo
+    package: nsh-denial-model

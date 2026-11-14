@@ -245,3 +245,7 @@ mlartifacts/
 reports/model/validation.json
 reports/model/validation/
 reports/model/sensitivity/
+
+# Model registry (phase 2): the local backend's versions hold model files; decisions are regenerated
+/registry/
+reports/model/registry_decision.json

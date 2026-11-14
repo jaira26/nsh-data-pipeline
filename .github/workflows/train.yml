@@ -1,0 +1,170 @@
+# Model pipeline (phase 2): build training set -> train -> validate gate -> bias gate -> push / rollback.
+# Runs in the same Docker image as local runs (Dockerfile.train), at small scale with few tuning trials.
+#   pull requests: local registry inside the runner (never touches production, needs no secrets)
+#   push to main:  GCP Artifact Registry (REGISTRY_BACKEND=gcp)
+# Email alerts on promotion, kept production, blocked gate and failure. See docs/model_registry.md.
+# No stored credentials: GCP login is Workload Identity Federation, and the alert mail password and
+# recipients are read from GCP Secret Manager with that login. The repo needs no GitHub secrets.
+name: Model pipeline
+
+on:
+  push:
+    branches: [main]
+    paths: &model_paths
+      - "src/nsh_pipeline/modeling/**"
+      - "src/nsh_pipeline/registry/**"
+      - "src/nsh_pipeline/bias/**"
+      - "params.yaml"
+      - "dvc.yaml"
+      - "**.dvc"
+      - "Dockerfile.train"
+      - "requirements.txt"
+      - ".github/workflows/train.yml"
+  pull_request:
+    paths: *model_paths
+  workflow_dispatch:                 # Actions tab -> Run workflow: test the GCP push from a branch before merging
+    inputs:
+      registry_backend:
+        description: "Registry backend"
+        type: choice
+        options: [local, gcp]
+        default: local
+
+permissions:
+  contents: read
+  id-token: write                    # GitHub OIDC token for Workload Identity Federation (no stored key)
+
+concurrency:
+  group: model-pipeline-${{ github.ref }}
+  cancel-in-progress: false        # never cancel a run halfway through a registry push
+
+env:
+  CI_N_TRIALS: "3"
+  REGISTRY_BACKEND: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'gcp' || inputs.registry_backend || 'local' }}
+  # Not secrets: identifiers only. Access is granted by GCP to this repository alone (attribute condition on
+  # the WIF provider), and the service account can only write to the nsh-models repository.
+  GCP_PROJECT_ID: nsh-capstone-hiral
+  GCP_WIF_PROVIDER: projects/711808422691/locations/global/workloadIdentityPools/github/providers/github-repo
+  GCP_SERVICE_ACCOUNT: nsh-model-ci@nsh-capstone-hiral.iam.gserviceaccount.com
+  # Alert sender settings (not secret). Password and recipients come from Secret Manager below.
+  SMTP_HOST: smtp.gmail.com
+  SMTP_PORT: "587"
+  SMTP_USER: nshcapestonealerts@gmail.com
+  ALERT_EMAIL_FROM: nshcapestonealerts@gmail.com
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build training image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.train
+          tags: nsh-train:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Keyless: GitHub's OIDC token is exchanged for short-lived nsh-model-ci credentials (Workload Identity
+      # Federation). The credentials file holds a token-exchange config, not a key, and expires with the job.
+      # Runs on every event except pull requests from forks, which GitHub gives no OIDC token (those runs
+      # still test the pipeline, without alerts). Pull requests only read the alert secrets: the registry
+      # backend stays local, so they never touch the GCP registry.
+      - name: Authenticate to GCP (Workload Identity Federation)
+        id: gcp
+        if: env.REGISTRY_BACKEND == 'gcp' || github.event.pull_request.head.repo.fork != true
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Read alert secrets from GCP Secret Manager
+        id: secrets
+        if: steps.gcp.outcome == 'success'
+        uses: google-github-actions/get-secretmanager-secrets@v2
+        with:
+          secrets: |-
+            smtp_password:${{ env.GCP_PROJECT_ID }}/smtp-password
+            alert_email_to:${{ env.GCP_PROJECT_ID }}/alert-email-to
+
+      # Every container step gets the same environment: alerts, CI run link, registry and (on main) GCP.
+      # The credentials file google-github-actions/auth writes lives in the workspace, i.e. under /app.
+      - name: Prepare container environment
+        run: |
+          {
+            echo "REGISTRY_BACKEND=${REGISTRY_BACKEND}"
+            echo "GITHUB_RUN_ID=${GITHUB_RUN_ID}"
+            echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+            echo "GITHUB_SERVER_URL=${GITHUB_SERVER_URL}"
+            echo "GITHUB_SHA=${GITHUB_SHA}"
+            if [ "${REGISTRY_BACKEND}" = gcp ] && [ -n "${CREDS}" ]; then
+              echo "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/app/$(basename "${CREDS}")"
+              echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}"
+            fi
+          } > "${RUNNER_TEMP}/container.env"
+          # Alert settings are passed by name only (-e NAME), so the password never appears in a file or the log.
+          echo "SECRET_ENV=-e SMTP_HOST -e SMTP_PORT -e SMTP_USER -e SMTP_PASSWORD -e ALERT_EMAIL_TO -e ALERT_EMAIL_FROM" >> "$GITHUB_ENV"
+        env:
+          CREDS: ${{ steps.gcp.outputs.credentials_file_path }}
+
+      - name: Run model pipeline (dvc repro register)
+        env: &secret_env
+          SMTP_PASSWORD: ${{ steps.secrets.outputs.smtp_password }}
+          ALERT_EMAIL_TO: ${{ steps.secrets.outputs.alert_email_to }}
+        run: |
+          # shellcheck disable=SC2086  # $SECRET_ENV must split into several -e flags
+          docker run --rm -v "$GITHUB_WORKSPACE":/app --env-file "${RUNNER_TEMP}/container.env" $SECRET_ENV \
+            nsh-train:ci sh -c '
+              set -e
+              python - <<EOF
+          import yaml
+          with open("params.yaml") as f:
+              p = yaml.safe_load(f)
+          p["scale"] = "small"
+          p["model"]["n_trials"] = int("${CI_N_TRIALS}")
+          with open("params.yaml", "w") as f:
+              yaml.safe_dump(p, f, sort_keys=False)
+          EOF
+              dvc repro register
+            '
+
+      - name: Registry decision summary
+        if: always()
+        run: |
+          if [ -f reports/model/registry_decision.json ]; then
+            {
+              echo "### Registry decision (${REGISTRY_BACKEND})"
+              echo '```json'
+              python3 -c "import json; d = json.load(open('reports/model/registry_decision.json')); print(json.dumps({k: d[k] for k in ('promoted', 'version', 'production_version', 'reason')}, indent=2))"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No registry decision: the pipeline stopped before the register stage." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Alert on failure or blocked gate
+        if: failure()
+        env: *secret_env
+        run: |
+          # shellcheck disable=SC2086  # $SECRET_ENV must split into several -e flags
+          docker run --rm -v "$GITHUB_WORKSPACE":/app --env-file "${RUNNER_TEMP}/container.env" $SECRET_ENV \
+            nsh-train:ci python -m nsh_pipeline.registry.notify --event failure --reports-dir reports/model
+
+      - name: Upload reports, registry record and MLflow store
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-pipeline-${{ github.run_id }}
+          if-no-files-found: ignore
+          path: |
+            reports/model/
+            registry/production.json
+            registry/history.jsonl
+            mlflow.db

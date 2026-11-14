@@ -9,3 +9,9 @@ logs
 **/__pycache__
 .pytest_cache
 .env
+# Phase 2: generated models, registry and MLflow stores never go into an image
+models
+models_mitigated
+registry
+mlflow.db
+mlruns
