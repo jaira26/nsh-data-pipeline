@@ -31,6 +31,7 @@ it, cleans it into reporting tables, checks it for anomalies and bias, and versi
 18. [Model training, tuning & selection (phase 2)](#18-model-training-tuning--selection-phase-2)
 19. [Validation & sensitivity analysis (phase 2)](#19-validation--sensitivity-analysis-phase-2)
 20. [Model bias & fairness-aware selection (phase 2)](#20-model-bias--fairness-aware-selection-phase-2)
+21. [Training data (phase 2)](#21-training-data-phase-2)
 
 ---
 
@@ -314,8 +315,11 @@ The DAG, Docker setup, DVC stages and run summary. See sections [3](#3-architect
   Run `dvc push` on the host instead.
 - **Remote:** `.dvc/config` points at the team's DagsHub storage,
   [dagshub.com/Kalpan1104/nsh-data-pipeline](https://dagshub.com/Kalpan1104/nsh-data-pipeline).
-  Run `dvc pull` to download every versioned output, or `dvc repro` to rebuild everything from the seed and the
-  public release (no credentials needed for either).
+  Run `dvc repro` to rebuild everything from the seed and the public GitHub release (no account needed).
+  `dvc pull` downloads the stored versions instead, but DagsHub answers `401 Unauthorized` without a login even
+  though the repo is public: create a free DagsHub account and token first, then
+  `dvc remote modify storage --local auth basic`, `... --local user <username>`, `... --local password <token>`
+  (`--local` keeps the token in `.dvc/config.local`, which is never committed).
 
 - **Getting an older version of the data back:**
 
@@ -587,6 +591,7 @@ Full list: [docs/decisions.md](docs/decisions.md).
 |---|---|---|
 | Data generation & acquisition | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `generate/`, `acquire/`, dataset release, test fixture |
 | Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
+| Training data (phase 2) | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `modeling/{dataset,features,split,build}.py`, release `data-v1.1`, `denial_model`, training sample fixture |
 | Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
 | Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
 | Model training, tuning, selection & MLflow (phase 2) | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `modeling/{candidates,tune,train,select,tracking,artifacts,charts}.py`, MLflow server |
@@ -786,6 +791,57 @@ The registry should deploy `bias.json → selected_model_dir` only when `bias.js
 when no candidate is fair enough, so `dvc repro` and CI stop before registration. Tests: `pytest
 tests/modeling/test_fairness.py tests/modeling/test_fairness_metrics.py`. Decisions: rows 41–49 in
 [docs/decisions.md](docs/decisions.md).
+
+---
+
+## 21. Training data (phase 2)
+
+Owner: Jairaghavendra Sridhar · Guidelines §2.1, §8.2 · Details: [docs/training_data.md](docs/training_data.md)
+
+The first phase-2 stage: it turns the processed tables into the model's training set. One row per **decided** card
+swipe, label `denied` (1 = Denied, 0 = Approved or Partial; Pended swipes have no decision and are excluded),
+12 features, split by date. Sections 18–20 train, validate and audit models on these splits.
+
+```bash
+dvc repro build_training_set     # acquire → preprocess → build_training_set
+# or: python -m nsh_pipeline.modeling.build --processed-dir data/processed --raw-dir data/raw --params params.yaml
+```
+
+| Split | Dates | Rows | Denied |
+|---|---|---|---|
+| train | Jan 1 – Apr 30 | 2,963 | 9.2% |
+| validation | May | 1,044 | 13.1% |
+| test | Jun 1 – 15 | 700 | 13.0% |
+
+The denial rate rises over the year because recent denials compound; validation and test behave alike, so a threshold
+tuned on May transfers to June.
+
+- **Learnable signal (release `data-v1.1`):** in `data-v1.0` denials were random (a flat ~5%). The generator now sets
+  each swipe's denial chance from documented causes in `params.yaml → denial_model`: higher amounts, Dental and Vision,
+  high-deductible plans, new members (< 180 days), recent denials and manual claims raise it; Drugs & Medicine lowers
+  it. **State, age, gender and VIP have no effect**, so any group difference a model shows in clean data comes from the
+  model, not the data; the only planted bias is `inject_issues.denial_skew`.
+- **Features:** amount, plan deductible, tenure, denials in the previous 90 days, service month, service category,
+  coverage tier, carrier, age band, group size, state, card vs manual. Slice columns for bias: state, group size,
+  age band, coverage tier, VIP.
+- **No leakage:** a time-based split (train on the past, judge on the latest unseen period); `prior_denials_90d`
+  counts only denials on **earlier** dates; nothing recorded after the swipe (paid/denied amounts, tickets) is a
+  feature.
+- **Contract:** every model module imports the columns instead of typing them:
+  `from nsh_pipeline.modeling.dataset import FEATURE_COLUMNS, LABEL_COLUMN, SLICE_COLUMNS, load_split`.
+  Tests use the seeded sample in `tests/fixtures/training/` through the `training_sample_dir` fixture.
+
+### Outputs
+
+```
+data/training/train.parquet · validation.parquet · test.parquet   # TRAINING_COLUMNS, DVC-tracked
+data/training/dataset_card.json   # label rule, features, split dates, rows and denial rate per split,
+                                  # source data: release, seed, generator version, injected issues (0)
+```
+
+Tests: `pytest tests/modeling/test_dataset_contract.py tests/modeling/test_training_sample.py
+tests/modeling/test_features.py tests/modeling/test_split.py tests/modeling/test_build.py
+tests/generate/test_denial_model.py`. Decisions: rows 21–26 in [docs/decisions.md](docs/decisions.md).
 
 ---
 
