@@ -1,10 +1,11 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-14T15:25:33+00:00",
+  "generated_at": "2026-11-14T15:36:17+00:00",
   "data_version": "data-v1.1",
-  "git_sha": "655991c47c8e8c9ba55862171e321c95d5a8e4a4",
+  "git_sha": "7e3c955f71021c5f1febbbe3ae8bef06a3752d51-dirty",
   "selected_model": "logistic_regression_reweighed",
   "selected_model_dir": "models_mitigated/candidates/logistic_regression_reweighed",
+  "selected_model_mlflow_run_id": "979e6a172e3b40abaa4dedcc3bc77f56",
   "base_model": "logistic_regression",
   "passed": true,
   "mitigation_applied": {
@@ -168,7 +169,9 @@
           "NY",
           "TX",
           "UT"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       },
       "false_positive_rate": {
         "gap_pts": 10.45,
@@ -185,7 +188,9 @@
           "NY",
           "TX",
           "UT"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "recall": {
         "gap_pts": null,
@@ -204,7 +209,9 @@
           "TX",
           "UT",
           "WA"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "precision": {
         "gap_pts": 17.58,
@@ -222,7 +229,9 @@
           "TX",
           "UT",
           "WA"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       }
     },
     "group_size_bucket": {
@@ -235,7 +244,9 @@
         "groups_judged": 5,
         "groups_too_small": [
           "50-99"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       },
       "false_positive_rate": {
         "gap_pts": 14.79,
@@ -246,7 +257,9 @@
         "groups_judged": 5,
         "groups_too_small": [
           "50-99"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "recall": {
         "gap_pts": null,
@@ -261,7 +274,9 @@
           "25-49",
           "250+",
           "50-99"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "precision": {
         "gap_pts": 14.84,
@@ -274,7 +289,9 @@
           "1-9",
           "250+",
           "50-99"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       }
     },
     "age_band": {
@@ -285,7 +302,9 @@
         "best_group": "55-64",
         "best_value": 0.1565,
         "groups_judged": 6,
-        "groups_too_small": []
+        "groups_too_small": [],
+        "limit_pts": null,
+        "flagged_groups": []
       },
       "false_positive_rate": {
         "gap_pts": 30.26,
@@ -294,7 +313,9 @@
         "best_group": "55-64",
         "best_value": 0.1533,
         "groups_judged": 6,
-        "groups_too_small": []
+        "groups_too_small": [],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "recall": {
         "gap_pts": null,
@@ -310,7 +331,9 @@
           "45-54",
           "55-64",
           "65+"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "precision": {
         "gap_pts": 8.89,
@@ -322,7 +345,9 @@
         "groups_too_small": [
           "55-64",
           "65+"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       }
     },
     "coverage_tier": {
@@ -333,7 +358,9 @@
         "best_group": "ES",
         "best_value": 0.2308,
         "groups_judged": 4,
-        "groups_too_small": []
+        "groups_too_small": [],
+        "limit_pts": null,
+        "flagged_groups": []
       },
       "false_positive_rate": {
         "gap_pts": 16.63,
@@ -342,7 +369,9 @@
         "best_group": "ES",
         "best_value": 0.1892,
         "groups_judged": 4,
-        "groups_too_small": []
+        "groups_too_small": [],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "recall": {
         "gap_pts": null,
@@ -355,7 +384,9 @@
           "EC",
           "EF",
           "ES"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "precision": {
         "gap_pts": 10.29,
@@ -364,7 +395,9 @@
         "best_group": "EF",
         "best_value": 0.3043,
         "groups_judged": 4,
-        "groups_too_small": []
+        "groups_too_small": [],
+        "limit_pts": null,
+        "flagged_groups": []
       }
     },
     "is_vip": {
@@ -377,7 +410,9 @@
         "groups_judged": 1,
         "groups_too_small": [
           "True"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       },
       "false_positive_rate": {
         "gap_pts": null,
@@ -388,7 +423,9 @@
         "groups_judged": 1,
         "groups_too_small": [
           "True"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "recall": {
         "gap_pts": null,
@@ -399,7 +436,9 @@
         "groups_judged": 1,
         "groups_too_small": [
           "True"
-        ]
+        ],
+        "limit_pts": 20,
+        "flagged_groups": []
       },
       "precision": {
         "gap_pts": null,
@@ -410,7 +449,9 @@
         "groups_judged": 1,
         "groups_too_small": [
           "True"
-        ]
+        ],
+        "limit_pts": null,
+        "flagged_groups": []
       }
     }
   },
@@ -1017,6 +1058,7 @@
       "base_model": "logistic_regression",
       "mitigation": null,
       "model_dir": "models/candidates/logistic_regression",
+      "mlflow_run_id": "e25a3778500d4b5f91a6d1ce06811b53",
       "threshold": 0.5297,
       "validation": {
         "pr_auc": 0.2249,
@@ -1088,6 +1130,7 @@
       "base_model": "random_forest",
       "mitigation": null,
       "model_dir": "models/candidates/random_forest",
+      "mlflow_run_id": "17e23d6fd4014d43968945a59e25cc91",
       "threshold": 0.4761,
       "validation": {
         "pr_auc": 0.2154,
@@ -1138,6 +1181,7 @@
       "base_model": "lightgbm",
       "mitigation": null,
       "model_dir": "models/candidates/lightgbm",
+      "mlflow_run_id": "91c6bf7e27be44a5acd29d852d905d79",
       "threshold": 0.5397,
       "validation": {
         "pr_auc": 0.208,
@@ -1251,6 +1295,7 @@
         }
       },
       "model_dir": "models_mitigated/candidates/logistic_regression_reweighed",
+      "mlflow_run_id": "979e6a172e3b40abaa4dedcc3bc77f56",
       "threshold": 0.5305,
       "validation": {
         "pr_auc": 0.23,
@@ -1298,5 +1343,5 @@
       }
     }
   },
-  "mlflow_run_id": "297cb63ec60e4b40b0abc58187aee36a"
+  "mlflow_run_id": "44e0ee416c50401381faf008f8c643d6"
 }

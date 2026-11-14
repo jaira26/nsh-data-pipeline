@@ -735,6 +735,11 @@ models_mitigated/candidates/<name>_reweighed/ # mitigated models, same contract 
 MLflow (experiment `nsh-denial-model`): one `model-bias` run with the gate settings, every candidate's gate metrics
 and the report files, plus a nested run per mitigated candidate with its params, metrics and fitted model.
 
+| | |
+|---|---|
+| `model-bias` run: tags, gate metrics per candidate, gate settings | ![MLflow model-bias run](docs/model_bias/mlflow_bias_run.png) |
+| Selected mitigated model: nested run with params, metrics and the logged model | ![MLflow mitigated run](docs/model_bias/mlflow_mitigated_run.png) |
+
 The registry should deploy `bias.json → selected_model_dir` only when `bias.json → passed` is true. The stage exits 1
 when no candidate is fair enough, so `dvc repro` and CI stop before registration. Tests: `pytest
 tests/modeling/test_fairness.py tests/modeling/test_fairness_metrics.py`. Decisions: rows 41–49 in

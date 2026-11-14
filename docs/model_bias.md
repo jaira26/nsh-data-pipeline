@@ -125,6 +125,14 @@ Always present: `per_slice_metrics`, `max_disparity`, `mitigation_applied`, `pas
 validation and test metrics, fairness results, tags and the fitted model (cloudpickle, as decision 33), so the final
 model can be loaded with `mlflow.sklearn.load_model("runs:/<selected_model_mlflow_run_id>/model")`.
 
+### In MLflow
+
+| | |
+|---|---|
+| `model-bias` run: `data_version` / `git_sha` / `selected_model` tags, every candidate's gate metrics, gate settings | ![MLflow model-bias run](model_bias/mlflow_bias_run.png) |
+| Nested run of the selected mitigated model: params, validation + test metrics, fairness results, logged model | ![MLflow mitigated run](model_bias/mlflow_mitigated_run.png) |
+| Report files and charts logged as artifacts | ![MLflow artifacts](model_bias/mlflow_bias_artifacts.png) |
+
 ## Results (data-v1.1, small scale)
 
 ### Clean data: the data is fair, the selected model was not
