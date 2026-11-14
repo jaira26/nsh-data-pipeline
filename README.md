@@ -30,6 +30,7 @@ it, cleans it into reporting tables, checks it for anomalies and bias, and versi
 17. [Team contributions](#17-team-contributions)
 18. [Model training, tuning & selection (phase 2)](#18-model-training-tuning--selection-phase-2)
 19. [Validation & sensitivity analysis (phase 2)](#19-validation--sensitivity-analysis-phase-2)
+20. [Model bias & fairness-aware selection (phase 2)](#20-model-bias--fairness-aware-selection-phase-2)
 
 ---
 
@@ -728,6 +729,63 @@ strength dominates tuning in all three model families (`C`, `min_samples_leaf`, 
 
 Tests: `pytest tests/modeling/test_evaluate.py tests/modeling/test_sensitivity.py` (offline, synthetic fixtures,
 throwaway MLflow store). Decisions: rows 35–40 in [docs/decisions.md](docs/decisions.md).
+
+## 20. Model bias & fairness-aware selection (phase 2)
+
+Owner: Het Prajapati · Guidelines §2.4–2.5, §6, §8.5–8.6 · Details: [docs/model_bias.md](docs/model_bias.md)
+
+Every candidate from training is audited per slice (`state`, `group_size_bucket`, `age_band`, `coverage_tier`,
+`is_vip`) with Fairlearn's `MetricFrame`. A group is **flagged** when its **false-positive rate** (approved swipes
+predicted as denials) or **recall** (denials caught) is more than **20 points worse than overall**, the group has at
+least 30 rows for that metric, and a one-sided Fisher exact test is significant after Bonferroni correction. Selection
+rate and precision are reported, not gated. A candidate that fails is **reweighed** on the flagged slice and refit;
+the **final model is the best validation PR-AUC candidate that passes the gate on validation**, confirmed on test.
+
+```bash
+dvc repro model_bias     # or: python -m nsh_pipeline.modeling.fairness --params params.yaml --data-dir data/training --models-dir models --out-dir reports/model
+```
+
+### Results (data-v1.1, small scale)
+
+| Data | Flagged | Mitigation | Selected | Test PR-AUC | Test gate |
+|---|---|---|---|---|---|
+| Clean | training's pick, `logistic_regression`: **Washington FPR 63% vs 33%** overall (a state effect learned from few clients; the data has none) | reweighing on `state` | `logistic_regression_reweighed` | 0.325 (was 0.351) | passed |
+| Injected `denial_skew` | **all 3 candidates on California** (FPR 85–99% vs 15–26%) and Oregon recall | reweighing on `state` | `random_forest_reweighed` | 0.289 (was 0.357) | passed |
+
+The planted skew is caught by every candidate and removed by reweighing; the price is ranking quality (PR-AUC) and,
+on injected data, a higher false-positive rate for everyone. Trade-offs, the 20-point calibration and the full
+tables are in [docs/model_bias.md](docs/model_bias.md); the injected-data report is in
+[docs/model_bias/injected/](docs/model_bias/injected/bias_report.md).
+
+![Fairness against performance](reports/model/bias/fairness_vs_performance.png)
+
+![Selected model by state: selection rate, FPR, recall and precision per group](reports/model/bias/slices_state.png)
+
+![Logistic regression by state, before and after reweighing](reports/model/bias/mitigation_logistic_regression_reweighed.png)
+
+![Planted skew: random forest by state, before and after reweighing](docs/model_bias/injected/mitigation_random_forest_reweighed.png)
+
+### Outputs
+
+```
+reports/model/bias.json                       # selected_model, selected_model_dir, passed, mitigation_applied,
+                                              # per_slice_metrics, max_disparity, every candidate's gate result
+reports/model/bias/                           # bias_report.md, slice_metrics.csv, per-slice + trade-off charts
+models_mitigated/candidates/<name>_reweighed/ # mitigated models, same contract as models/ (DVC, not Git)
+```
+
+MLflow (experiment `nsh-denial-model`): one `model-bias` run with the gate settings, every candidate's gate metrics
+and the report files, plus a nested run per mitigated candidate with its params, metrics and fitted model.
+
+| | |
+|---|---|
+| `model-bias` run: tags, gate metrics per candidate, gate settings | ![MLflow model-bias run](docs/model_bias/mlflow_bias_run.png) |
+| Selected mitigated model: nested run with params, metrics and the logged model | ![MLflow mitigated run](docs/model_bias/mlflow_mitigated_run.png) |
+
+The registry should deploy `bias.json → selected_model_dir` only when `bias.json → passed` is true. The stage exits 1
+when no candidate is fair enough, so `dvc repro` and CI stop before registration. Tests: `pytest
+tests/modeling/test_fairness.py tests/modeling/test_fairness_metrics.py`. Decisions: rows 41–49 in
+[docs/decisions.md](docs/decisions.md).
 
 ---
 

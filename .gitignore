@@ -235,7 +235,9 @@ reports/injected/
 
 # Model training (phase 2): models go to DVC / the registry, MLflow stores stay local
 /models
+/models_mitigated
 mlflow.db
+mlflow_*.db
 mlruns/
 mlartifacts/
 

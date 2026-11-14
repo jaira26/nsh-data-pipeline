@@ -172,3 +172,30 @@ model_validation:
     tuning_run_filter: "tags.stage = 'tuning_trial'"
     min_runs: 3                    # fewer runs for a model family: skipped with a message
     min_runs_for_forest: 10        # fewer: |Spearman rho| / correlation ratio instead of permutation importance
+
+# Model bias: fairness audit of every candidate, mitigation and fairness-aware final selection (phase 2, Het).
+# Not under `bias:` (that section is the phase-1 data-bias report). See docs/model_bias.md.
+# Selection uses the VALIDATION split; the test split only confirms the choice (bias.json -> passed).
+model_bias:
+  slice_columns: [state, group_size_bucket, age_band, coverage_tier, is_vip]
+  # Gate: a group is flagged when it is worse off than overall by more than its metric's limit (percentage
+  # points), the metric's denominator has >= min_support rows, and a one-sided Fisher exact test against all
+  # other rows gives p < alpha / number of tests (Bonferroni). null = reported, not gated.
+  # 20 pts, calibrated on data-v1.1 small scale: every model family shows a ~17-pt false-positive gap for
+  # age 18-25 that comes from a documented driver (short tenure); the spurious state effect learned by the
+  # logistic regression is 30 pts and the planted CA skew 70+ pts.
+  max_gap_pts:
+    false_positive_rate: 20        # approved swipes wrongly predicted as denials
+    recall: 20                     # denials the model misses
+    selection_rate: null           # moves with legitimate differences in denial risk: reported only
+    precision: null                # reported only
+  min_support: 30                  # smaller groups (e.g. is_vip = True) are "too small to judge"
+  alpha: 0.01
+  mitigation:
+    enabled: true
+    method: reweighing             # train rows reweighed on the root flagged slice, refit with the tuned params
+  fail_on_gate: true               # exit 1 when no candidate passes or the selected one fails on test
+  out_dir: reports/model           # bias.json + bias/ (Markdown report, slice_metrics.csv, charts)
+  mitigated_models_dir: models_mitigated   # <name>_reweighed/ in the model contract layout
+  mlflow:
+    enabled: true                  # store + experiment come from model.mlflow
