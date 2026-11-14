@@ -29,6 +29,7 @@ it, cleans it into reporting tables, checks it for anomalies and bias, and versi
 16. [Troubleshooting](#16-troubleshooting)
 17. [Team contributions](#17-team-contributions)
 18. [Model training, tuning & selection (phase 2)](#18-model-training-tuning--selection-phase-2)
+19. [Validation & sensitivity analysis (phase 2)](#19-validation--sensitivity-analysis-phase-2)
 20. [Model bias & fairness-aware selection (phase 2)](#20-model-bias--fairness-aware-selection-phase-2)
 
 ---
@@ -687,6 +688,47 @@ scores = model.predict_proba(load_split("test")[FEATURE_COLUMNS])[:, 1]
 Tests: `pytest tests/modeling` (offline, on the sample fixture). Modelling decisions: rows 27–34 in
 [docs/decisions.md](docs/decisions.md).
 
+## 19. Validation & sensitivity analysis (phase 2)
+
+Owner: Raj Mehta · Guidelines §2.3, §5, §7.2, §8.4 · Details: [docs/model_validation.md](docs/model_validation.md)
+
+`models/best` is measured once on the **test split** (June, never used for training, tuning, selection or the
+threshold). The decision threshold is chosen on the **validation split** (best F1 by default). A **gate** blocks weak
+models: when any minimum in `params.yaml → model_validation` is missed, the report is still written and the
+command exits 1, so `dvc repro` and CI stop.
+
+### How to run
+
+```bash
+dvc repro validate_model sensitivity     # after build_training_set and train; or directly:
+
+python -m nsh_pipeline.modeling.evaluate --params params.yaml --model-dir models/best \
+    --data-dir data/training --out-dir reports/model
+python -m nsh_pipeline.modeling.sensitivity --params params.yaml --model-dir models/best \
+    --data-dir data/training --out-dir reports/model/sensitivity
+```
+
+Both log a run to MLflow experiment `nsh-denial-model` (tagged `data_version`, `git_sha`); add `--no-mlflow` to skip.
+
+### Outputs
+
+| File | Contents |
+|---|---|
+| `reports/model/validation.json` | `roc_auc`, `pr_auc`, `precision`, `recall`, `f1`, `threshold`, `confusion_matrix`, `passed` (+ gate details) |
+| `reports/model/validation/*.png` | ROC curve, PR curve, confusion matrix, precision/recall vs threshold |
+| `reports/model/sensitivity/` | SHAP beeswarm + mean-\|SHAP\| bar, 3 waterfall plots (TP / FP / FN), `top_features.json` with the signal check, hyperparameter sensitivity plots + `hyperparameter_importance.json` |
+
+### Gate (test split)
+
+PR-AUC ≥ 0.20 · PR-AUC ≥ 1.5× the denial rate · ROC-AUC ≥ 0.65 · recall ≥ 0.40. On data-v1.1 (small scale), the
+selected logistic regression scores ROC-AUC 0.71, PR-AUC 0.35 (2.7× chance) and recall 0.69 → **passed**. Why the
+bar is not the card's 0.75 target: see [docs/model_validation.md](docs/model_validation.md#validation-gate).
+
+SHAP confirms the learned drivers: prior denials, amount, service category and tenure rank 1–4. Regularisation
+strength dominates tuning in all three model families (`C`, `min_samples_leaf`, `learning_rate`).
+
+Tests: `pytest tests/modeling/test_evaluate.py tests/modeling/test_sensitivity.py` (offline, synthetic fixtures,
+throwaway MLflow store). Decisions: rows 35–40 in [docs/decisions.md](docs/decisions.md).
 
 ## 20. Model bias & fairness-aware selection (phase 2)
 

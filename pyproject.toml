@@ -8,6 +8,7 @@ dependencies = [
     "fairlearn==0.15.0", "matplotlib==3.11.2", "scipy==1.17.1",  # bias slicing (M5)
     "pandera[pandas]==0.34.1",  # schema validation (M3)
     "scikit-learn==1.9.1", "lightgbm==4.7.0", "optuna==5.0.0", "mlflow==3.18.0",  # model training (phase 2)
+    "shap==0.51.0",  # SHAP sensitivity analysis (phase 2, validation)
 ]
 
 [project.optional-dependencies]
