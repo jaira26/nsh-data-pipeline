@@ -100,6 +100,7 @@ jobs:
         run: |
           {
             echo "REGISTRY_BACKEND=${REGISTRY_BACKEND}"
+            echo "CI_N_TRIALS=${CI_N_TRIALS}"
             echo "GITHUB_RUN_ID=${GITHUB_RUN_ID}"
             echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
             echo "GITHUB_SERVER_URL=${GITHUB_SERVER_URL}"
