@@ -21,17 +21,20 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 
 import mlflow
+import mlflow.sklearn
 import numpy as np
 import pandas as pd
+from mlflow.models import infer_signature
 
 from nsh_pipeline.config import load_params
 from nsh_pipeline.modeling import fairness_report
 from nsh_pipeline.modeling.artifacts import METADATA_FILE, MODEL_FILE, candidate_dir, load_model, save_model, utc_now
-from nsh_pipeline.modeling.candidates import MODEL_NAMES
+from nsh_pipeline.modeling.candidates import MODEL_NAMES, features
 from nsh_pipeline.modeling.dataset import FEATURE_COLUMNS, LABEL_COLUMN, SLICE_COLUMNS, load_dataset_card, load_split
 from nsh_pipeline.modeling.fairness_metrics import RATE_METRICS, audit, root_slice
 from nsh_pipeline.modeling.fairness_mitigation import mitigated_name, reweigh_and_refit
@@ -199,6 +202,7 @@ def build_report(results: dict, ranking: list[str], selected: str | None, settin
         "git_sha": tags.get("git_sha"),
         "selected_model": selected,
         "selected_model_dir": result["model_dir"] if selected else None,
+        "selected_model_mlflow_run_id": result.get("mlflow_run_id") if selected else None,
         "base_model": result["base_model"],
         "passed": passed,
         "mitigation_applied": result["mitigation"] if selected else None,
@@ -220,7 +224,7 @@ def build_report(results: dict, ranking: list[str], selected: str | None, settin
         "ranking": ranking,
         "candidates": {
             name: {"base_model": res["base_model"], "mitigation": res["mitigation"], "model_dir": res["model_dir"],
-                   "threshold": round(res["threshold"], 4),
+                   "mlflow_run_id": res.get("mlflow_run_id"), "threshold": round(res["threshold"], 4),
                    SELECTION_SPLIT: split_summary(res[SELECTION_SPLIT]), AUDIT_SPLIT: split_summary(res[AUDIT_SPLIT])}
             for name, res in results.items()
         },
@@ -237,6 +241,35 @@ def tracking_run(settings: dict, tags: dict):
     with mlflow.start_run(run_name="model-bias") as run:
         mlflow.set_tags({**tags, "stage": "model_bias"})
         yield run
+
+
+def log_mitigated_model(name: str, model, result: dict, settings: dict, tags: dict, train: pd.DataFrame) -> str:
+    """A nested MLflow run per mitigated candidate, like training's candidate runs: params, validation and test
+    metrics, fairness gate results, tags and the fitted model (cloudpickle, as decision 33). Returns the run id."""
+    info = result["mitigation"]
+    with mlflow.start_run(run_name=name, nested=True) as child:
+        mlflow.set_tags({**tags, "stage": "mitigated_candidate", "model_name": name, "base_model": info["base_model"],
+                         "mitigation": f"{info['method']} on {info['slice']}"})
+        mlflow.log_params({**{key: value for key, value in (result["params"] or {}).items()},
+                           "mitigation_method": info["method"], "mitigation_slice": info["slice"],
+                           "threshold": round(result["threshold"], 6)})
+        metrics = {"effective_share": info["effective_share"]}
+        for split, prefix in ((SELECTION_SPLIT, "val"), (AUDIT_SPLIT, "test")):
+            performance = result[split]["performance"]
+            metrics.update({f"{prefix}_{key}": value for key, value in performance.items()
+                            if isinstance(value, float) and not np.isnan(value)})
+            metrics[f"{prefix}_fairness_passed"] = float(result[split]["passed"])
+            for metric, worst in result[split]["worst_gap_pts"].items():
+                metrics[f"{prefix}_worst_gap_pts.{metric}"] = worst["gap_pts"]
+        mlflow.log_metrics(metrics)
+        if settings["mlflow"].get("log_models", True):
+            sample = features(train).head(5)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")  # integer-column schema hint, as in training
+                mlflow.sklearn.log_model(model, name="model", input_example=sample,
+                                         signature=infer_signature(sample, model.predict_proba(sample)),
+                                         serialization_format="cloudpickle")
+        return child.info.run_id
 
 
 def log_results(report: dict, settings: dict, report_path: Path, report_dir: Path, mitigated: dict) -> None:
@@ -257,6 +290,8 @@ def log_results(report: dict, settings: dict, report_path: Path, report_dir: Pat
     mlflow.log_artifacts(str(report_dir), artifact_path="model_bias/report")
     for name, folder in mitigated.items():
         mlflow.log_artifacts(str(folder), artifact_path=f"mitigated_models/{name}")
+    if report["selected_model_mlflow_run_id"]:
+        mlflow.set_tag("selected_model_run_id", report["selected_model_mlflow_run_id"])
 
 
 def run_model_bias(params: dict, data_dir="data/training", models_dir="models", out_dir=None,
@@ -279,7 +314,8 @@ def run_model_bias(params: dict, data_dir="data/training", models_dir="models", 
         results, mitigated = {}, {}
         for name, (model, metadata) in candidates.items():
             results[name] = {**assess(model, splits, settings), "base_model": name, "mitigation": None,
-                             "model_dir": str(candidate_dir(name, models_dir))}
+                             "model_dir": str(candidate_dir(name, models_dir)), "params": metadata.get("params"),
+                             "mlflow_run_id": metadata.get("mlflow_run_id")}
             logger.info("%s: validation gate %s, test gate %s", name, "passed" if results[name][SELECTION_SPLIT][
                 "passed"] else "FAILED", "passed" if results[name][AUDIT_SPLIT]["passed"] else "FAILED")
 
@@ -297,11 +333,13 @@ def run_model_bias(params: dict, data_dir="data/training", models_dir="models", 
                                                 settings["seed"])
                 new = mitigated_name(name)
                 results[new] = {**assess(model, splits, settings), "base_model": name, "mitigation": info,
-                                "model_dir": str(folder)}
+                                "model_dir": str(folder), "params": metadata.get("params") or {}}
+                run_id = log_mitigated_model(new, model, results[new], settings, tags, splits["train"]) if run else None
+                results[new]["mlflow_run_id"] = run_id
                 save_model(model, {
                     "model_name": new, "params": metadata.get("params") or {}, "cv_metrics": {},
                     "validation_metrics": _clean(results[new][SELECTION_SPLIT]["performance"]),
-                    "mlflow_run_id": run.info.run_id if run else None,
+                    "mlflow_run_id": run_id,
                     "data_version": data_version(card), "git_sha": tags["git_sha"], "created_at": utc_now(),
                     "seed": settings["seed"], "base_model": name, "mitigation": info,
                 }, folder)

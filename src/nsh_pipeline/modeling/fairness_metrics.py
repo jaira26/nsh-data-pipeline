@@ -192,13 +192,19 @@ def audit(frame: pd.DataFrame, y_true, scores, threshold: float, slice_columns, 
     table, overall = slice_metrics(frame, y_true, y_pred, slice_columns)
     flags = flag_disparities(table, overall, settings["max_gap_pts"], settings["min_support"], settings["alpha"])
     flagged = flags[flags["flagged"]]
+    disparity = max_disparity(table, settings["min_support"])
+    for column, by_metric in disparity.items():  # tie the largest gap to the gate: its limit and flagged groups
+        for metric, entry in by_metric.items():
+            entry["limit_pts"] = (settings["max_gap_pts"] or {}).get(metric)
+            mine = flagged[(flagged["slice"] == column) & (flagged["metric"] == metric)]
+            entry["flagged_groups"] = sorted(str(group) for group in mine["group"])
     return {
         "threshold": float(threshold),
         "overall": overall,
         "table": table,
         "flags": flags,
         "flagged": flagged,
-        "max_disparity": max_disparity(table, settings["min_support"]),
+        "max_disparity": disparity,
         "n_tests": flags.attrs["n_tests"],
         "alpha_corrected": flags.attrs["alpha_corrected"],
         "passed": flagged.empty,

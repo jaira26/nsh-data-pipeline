@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import mlflow
+import mlflow.sklearn
 import numpy as np
 import pandas as pd
 import pytest
@@ -184,6 +185,9 @@ def test_gate_failure_exits_1_after_writing_the_report(skewed_setup, tmp_path, m
     assert saved["selected_model"] is None and saved["passed"] is False
     assert saved["audited_model"] == saved["ranking"][0]
     assert any(f["group"] == SKEW_STATE for f in saved["flags"])
+    fpr = saved["max_disparity"]["state"]["false_positive_rate"]
+    assert fpr["flagged_groups"] == [SKEW_STATE] and fpr["limit_pts"] == 20
+    assert saved["max_disparity"]["state"]["selection_rate"]["limit_pts"] is None  # reported, not gated
     assert "no candidate passes" in (tmp_path / "reports" / "bias" / REPORT_MD).read_text(encoding="utf-8")
 
     report = fairness.main([*argv, "--no-fail"])  # exploratory runs can opt out of the exit code
@@ -211,8 +215,22 @@ def test_mlflow_run_is_logged_with_tags_metrics_and_artifacts(skewed_setup, tmp_
     assert "logistic_regression.validation.passed" in run_info.data.metrics
     artifacts = {item.path for item in mlflow.MlflowClient().list_artifacts(report["mlflow_run_id"], "model_bias")}
     assert "model_bias/bias.json" in artifacts
+
+    # every mitigated candidate is its own nested run with params, metrics and a loadable model
+    child_id = report["selected_model_mlflow_run_id"]
+    assert run_info.data.tags["selected_model_run_id"] == child_id
+    child = mlflow.get_run(child_id)
+    assert child.data.tags["mlflow.parentRunId"] == report["mlflow_run_id"]
+    assert child.data.tags["stage"] == "mitigated_candidate"
+    assert child.data.tags["git_sha"] == run_info.data.tags["git_sha"]
+    assert child.data.params["mitigation_slice"] == "state"
+    assert {"val_pr_auc", "test_pr_auc", "val_fairness_passed"} <= set(child.data.metrics)
+    logged = mlflow.sklearn.load_model(f"runs:/{child_id}/model")
+    test = load_split("test", data_dir)
+    assert logged.predict_proba(test[FEATURE_COLUMNS]).shape == (len(test), 2)
     _, metadata = load_model(report["selected_model_dir"])
-    assert metadata["mlflow_run_id"] == report["mlflow_run_id"]
+    assert metadata["mlflow_run_id"] == child_id
+    assert report["candidates"]["logistic_regression"]["mlflow_run_id"] is None  # the fixture's own metadata
 
 
 def test_rerun_removes_stale_mitigated_models(skewed_setup, clean_setup, tmp_path):

@@ -717,6 +717,8 @@ tables are in [docs/model_bias.md](docs/model_bias.md); the injected-data report
 
 ![Fairness against performance](reports/model/bias/fairness_vs_performance.png)
 
+![Selected model by state: selection rate, FPR, recall and precision per group](reports/model/bias/slices_state.png)
+
 ![Logistic regression by state, before and after reweighing](reports/model/bias/mitigation_logistic_regression_reweighed.png)
 
 ![Planted skew: random forest by state, before and after reweighing](docs/model_bias/injected/mitigation_random_forest_reweighed.png)
@@ -729,6 +731,9 @@ reports/model/bias.json                       # selected_model, selected_model_d
 reports/model/bias/                           # bias_report.md, slice_metrics.csv, per-slice + trade-off charts
 models_mitigated/candidates/<name>_reweighed/ # mitigated models, same contract as models/ (DVC, not Git)
 ```
+
+MLflow (experiment `nsh-denial-model`): one `model-bias` run with the gate settings, every candidate's gate metrics
+and the report files, plus a nested run per mitigated candidate with its params, metrics and fitted model.
 
 The registry should deploy `bias.json → selected_model_dir` only when `bias.json → passed` is true. The stage exits 1
 when no candidate is fair enough, so `dvc repro` and CI stop before registration. Tests: `pytest

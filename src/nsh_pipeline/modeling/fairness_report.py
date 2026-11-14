@@ -72,19 +72,24 @@ def _verdicts(flags: pd.DataFrame, column: str, metric: str) -> dict:
             for r in rows.to_dict("records")}
 
 
-def slice_chart(audit: dict, column: str, metrics: list[str], title: str, path: Path) -> Path:
-    """One panel per gated metric: horizontal bars per group, overall as a dashed line.
+def slice_chart(audit: dict, column: str, settings: dict, title: str, path: Path) -> Path:
+    """2 x 2 panels, one per metric (selection rate, FPR, recall, precision): bars per group, overall dashed.
 
-    Flagged groups are red with a "▲ flagged" label; groups too small to judge are gray.
+    Flagged groups are red with a "▲ flagged" label; groups whose denominator is too small to judge are
+    gray. Each panel title says whether the metric is gated (with its limit) or only reported.
     """
     table = audit["table"][audit["table"]["slice"] == column].set_index("group")
     groups = ordered_groups(column, table.index)
-    fig = Figure(figsize=(4.2 * len(metrics) + 1.2, 0.42 * len(groups) + 1.7), dpi=150, facecolor=SURFACE)
-    axes = fig.subplots(1, len(metrics), sharey=True, squeeze=False)[0]
+    metrics = list(RATE_METRICS)
+    fig = Figure(figsize=(10.4, 2 * (0.4 * len(groups) + 1.25) + 0.5), dpi=150, facecolor=SURFACE)
+    axes = fig.subplots(2, 2, sharey=True).ravel()
     colors = {"flagged": CRITICAL, "too small": MUTED, "ok": SERIES[0]}
     for ax, metric in zip(axes, metrics):
         _style(ax)
         verdicts = _verdicts(audit["flags"], column, metric)
+        for group in groups:  # metrics that are not gated have no flag rows: judge size from the support
+            if group not in verdicts and table.loc[group, SUPPORT[metric]] < settings["min_support"]:
+                verdicts[group] = "too small"
         values = [float(table.loc[g, metric]) if pd.notna(table.loc[g, metric]) else 0.0 for g in groups]
         y = list(range(len(groups)))
         ax.barh(y, values, height=0.68, color=[colors[verdicts.get(g, "ok")] for g in groups])
@@ -102,7 +107,9 @@ def slice_chart(audit: dict, column: str, metrics: list[str], title: str, path: 
                         fontweight="bold" if verdict == "flagged" else None,
                         bbox={"facecolor": SURFACE, "edgecolor": "none", "pad": 0.5})
         _rate_axis(ax, max(max(values), overall, 0.05) * 1.6)
-        ax.set_title(METRIC_LABELS[metric], loc="left", color=TEXT, fontsize=9.5, fontweight="bold")
+        limit = settings["max_gap_pts"].get(metric)
+        status = f"gated: flagged if > {limit:g} pts worse" if limit is not None else "reported, not gated"
+        ax.set_title(f"{METRIC_LABELS[metric]}\n{status}", loc="left", color=TEXT, fontsize=9, fontweight="bold")
     fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
     fig.tight_layout()
     fig.savefig(path, facecolor=SURFACE)
@@ -383,7 +390,7 @@ def write_all(report: dict, results: dict, settings: dict, report_dir) -> dict:
     charts = {}
     for column in report["gate"]["slice_columns"]:
         file = f"slices_{column}.png"
-        slice_chart(test_audit, column, metrics, f"{audited} by {column}, {report['audit_split']} split",
+        slice_chart(test_audit, column, settings, f"{audited} by {column}, {report['audit_split']} split",
                     report_dir / file)
         charts[column] = file
     for name, result in results.items():

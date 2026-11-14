@@ -68,6 +68,9 @@ def test_planted_false_positive_disparity_is_flagged():
     assert list(zip(flagged["group"], flagged["metric"])) == [("CA", "false_positive_rate")]
     row = flagged.iloc[0]
     assert row["gap_pts"] > 20 and row["p_value"] < result["alpha_corrected"]
+    state = result["max_disparity"]["state"]
+    assert state["false_positive_rate"]["flagged_groups"] == ["CA"] and state["false_positive_rate"]["limit_pts"] == 20
+    assert state["recall"]["flagged_groups"] == [] and state["selection_rate"]["limit_pts"] is None
 
 
 def test_planted_recall_disparity_is_flagged_in_the_worse_direction():

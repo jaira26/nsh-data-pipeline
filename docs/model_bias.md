@@ -104,22 +104,26 @@ Always present: `per_slice_metrics`, `max_disparity`, `mitigation_applied`, `pas
 |---|---|
 | `selected_model` | e.g. `logistic_regression_reweighed`; `null` when no candidate passes |
 | `selected_model_dir` | folder with `model.joblib` + `metadata.json` to register (`models/candidates/…` or `models_mitigated/candidates/…`) |
+| `selected_model_mlflow_run_id` | MLflow run that holds the selected model (training's candidate run, or this stage's nested run for a mitigated model) |
 | `base_model`, `mitigation_applied` | the family it came from; `null` or `{method, slice, effective_n, weight_min/max, train gap before/after, …}` |
 | `passed` | selected model passes the gate on the **test** split |
 | `selection_reason` | one sentence, e.g. which better-scoring candidates failed the gate |
 | `threshold` | the selected model's decision threshold (best F1 on validation) |
 | `gate` | limits, `min_support`, `alpha`, number of tests and corrected alpha, slice columns |
 | `overall`, `performance` | the selected model's overall rates on test; PR-AUC, ROC-AUC, precision, recall, F1 on validation and test |
-| `max_disparity` | per slice and metric: largest gap between two judged groups (`gap_pts`, worst/best group and value, groups too small) |
+| `max_disparity` | per slice and metric: largest gap between two judged groups (`gap_pts`, worst/best group and value, groups too small), the metric's gate `limit_pts` (`null` = reported only) and the `flagged_groups` |
 | `per_slice_metrics` | per slice and group on test: counts, rates, `flagged_metrics`, `too_small_for` |
 | `flags` | test-split flags of the selected model (empty when it passes) |
 | `ranking`, `candidates` | every candidate's threshold and gate result, worst gaps and flags on validation and test |
 | `data_version`, `git_sha`, `mlflow_run_id`, `generated_at`, `schema_version` | lineage |
 
 `reports/model/bias/` holds `bias_report.md`, `slice_metrics.csv` (every candidate × split × group),
-`slices_<column>.png`, `mitigation_<name>.png` and `fairness_vs_performance.png`. All of it is also logged to the MLflow
-run `model-bias` (experiment `nsh-denial-model`, tags `stage=model_bias`, `data_version`, `git_sha`, `selected_model`),
-together with the mitigated models.
+`slices_<column>.png` (all four metrics per group, flagged groups in red, groups too small in gray),
+`mitigation_<name>.png` and `fairness_vs_performance.png`. All of it is also logged to the MLflow run `model-bias`
+(experiment `nsh-denial-model`, tags `stage=model_bias`, `data_version`, `git_sha`, `selected_model`,
+`selected_model_run_id`). Each mitigated candidate gets a nested run like training's candidate runs: its params,
+validation and test metrics, fairness results, tags and the fitted model (cloudpickle, as decision 33), so the final
+model can be loaded with `mlflow.sklearn.load_model("runs:/<selected_model_mlflow_run_id>/model")`.
 
 ## Results (data-v1.1, small scale)
 
