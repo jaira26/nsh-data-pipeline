@@ -1,0 +1,1302 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-14T15:25:33+00:00",
+  "data_version": "data-v1.1",
+  "git_sha": "655991c47c8e8c9ba55862171e321c95d5a8e4a4",
+  "selected_model": "logistic_regression_reweighed",
+  "selected_model_dir": "models_mitigated/candidates/logistic_regression_reweighed",
+  "base_model": "logistic_regression",
+  "passed": true,
+  "mitigation_applied": {
+    "method": "reweighing",
+    "slice": "state",
+    "base_model": "logistic_regression",
+    "train_rows": 2963,
+    "effective_n": 2928.0,
+    "effective_share": 0.9882,
+    "weight_min": 0.6311,
+    "weight_max": 2.8458,
+    "train_denial_gap_before_pts": 11.32,
+    "train_denial_gap_after_pts": 0.0,
+    "train_denial_rate_by_group": {
+      "NY": {
+        "n": 55,
+        "before": 0.1455,
+        "after": 0.0918
+      },
+      "WA": {
+        "n": 334,
+        "before": 0.1407,
+        "after": 0.0918
+      },
+      "NV": {
+        "n": 78,
+        "before": 0.1154,
+        "after": 0.0918
+      },
+      "OR": {
+        "n": 1358,
+        "before": 0.0979,
+        "after": 0.0918
+      },
+      "CA": {
+        "n": 489,
+        "before": 0.0818,
+        "after": 0.0918
+      },
+      "TX": {
+        "n": 196,
+        "before": 0.0663,
+        "after": 0.0918
+      },
+      "CO": {
+        "n": 83,
+        "before": 0.0602,
+        "after": 0.0918
+      },
+      "ID": {
+        "n": 134,
+        "before": 0.0597,
+        "after": 0.0918
+      },
+      "UT": {
+        "n": 112,
+        "before": 0.0446,
+        "after": 0.0918
+      },
+      "AZ": {
+        "n": 124,
+        "before": 0.0323,
+        "after": 0.0918
+      }
+    }
+  },
+  "selection_reason": "logistic_regression_reweighed has the best validation PR-AUC and passes the fairness gate.",
+  "audited_model": "logistic_regression_reweighed",
+  "audit_split": "test",
+  "selection_split": "validation",
+  "threshold": 0.5305,
+  "gate": {
+    "max_gap_pts": {
+      "false_positive_rate": 20,
+      "recall": 20
+    },
+    "reported_only": [
+      "selection_rate",
+      "precision"
+    ],
+    "min_support": 30,
+    "alpha": 0.01,
+    "n_tests": 23,
+    "alpha_corrected": 0.0004347826086956522,
+    "slice_columns": [
+      "state",
+      "group_size_bucket",
+      "age_band",
+      "coverage_tier",
+      "is_vip"
+    ]
+  },
+  "overall": {
+    "count": 700,
+    "tp": 62,
+    "fp": 191,
+    "fn": 29,
+    "tn": 418,
+    "positives": 91,
+    "negatives": 609,
+    "predicted_positive": 253,
+    "base_rate": 0.13,
+    "selection_rate": 0.3614,
+    "false_positive_rate": 0.3136,
+    "recall": 0.6813,
+    "precision": 0.2451
+  },
+  "performance": {
+    "validation": {
+      "pr_auc": 0.23,
+      "roc_auc": 0.6647,
+      "precision": 0.2222,
+      "recall": 0.6131,
+      "f1": 0.3262,
+      "threshold": 0.5305,
+      "positive_rate": 0.1312,
+      "confusion_matrix": [
+        [
+          613,
+          294
+        ],
+        [
+          53,
+          84
+        ]
+      ]
+    },
+    "test": {
+      "pr_auc": 0.3248,
+      "roc_auc": 0.7044,
+      "precision": 0.2451,
+      "recall": 0.6813,
+      "f1": 0.3605,
+      "threshold": 0.5305,
+      "positive_rate": 0.13,
+      "confusion_matrix": [
+        [
+          418,
+          191
+        ],
+        [
+          29,
+          62
+        ]
+      ]
+    }
+  },
+  "max_disparity": {
+    "state": {
+      "selection_rate": {
+        "gap_pts": 16.61,
+        "worst_group": "OR",
+        "worst_value": 0.3919,
+        "best_group": "AZ",
+        "best_value": 0.2258,
+        "groups_judged": 4,
+        "groups_too_small": [
+          "CO",
+          "ID",
+          "NV",
+          "NY",
+          "TX",
+          "UT"
+        ]
+      },
+      "false_positive_rate": {
+        "gap_pts": 10.45,
+        "worst_group": "CA",
+        "worst_value": 0.3712,
+        "best_group": "WA",
+        "best_value": 0.2667,
+        "groups_judged": 3,
+        "groups_too_small": [
+          "AZ",
+          "CO",
+          "ID",
+          "NV",
+          "NY",
+          "TX",
+          "UT"
+        ]
+      },
+      "recall": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "AZ",
+          "CA",
+          "CO",
+          "ID",
+          "NV",
+          "NY",
+          "TX",
+          "UT",
+          "WA"
+        ]
+      },
+      "precision": {
+        "gap_pts": 17.58,
+        "worst_group": "CA",
+        "worst_value": 0.1404,
+        "best_group": "OR",
+        "best_value": 0.3162,
+        "groups_judged": 2,
+        "groups_too_small": [
+          "AZ",
+          "CO",
+          "ID",
+          "NV",
+          "NY",
+          "TX",
+          "UT",
+          "WA"
+        ]
+      }
+    },
+    "group_size_bucket": {
+      "selection_rate": {
+        "gap_pts": 18.08,
+        "worst_group": "100-249",
+        "worst_value": 0.4276,
+        "best_group": "10-24",
+        "best_value": 0.2468,
+        "groups_judged": 5,
+        "groups_too_small": [
+          "50-99"
+        ]
+      },
+      "false_positive_rate": {
+        "gap_pts": 14.79,
+        "worst_group": "100-249",
+        "worst_value": 0.3655,
+        "best_group": "10-24",
+        "best_value": 0.2177,
+        "groups_judged": 5,
+        "groups_too_small": [
+          "50-99"
+        ]
+      },
+      "recall": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "1-9",
+          "10-24",
+          "25-49",
+          "250+",
+          "50-99"
+        ]
+      },
+      "precision": {
+        "gap_pts": 14.84,
+        "worst_group": "25-49",
+        "worst_value": 0.15,
+        "best_group": "100-249",
+        "best_value": 0.2984,
+        "groups_judged": 3,
+        "groups_too_small": [
+          "1-9",
+          "250+",
+          "50-99"
+        ]
+      }
+    },
+    "age_band": {
+      "selection_rate": {
+        "gap_pts": 38.57,
+        "worst_group": "18-25",
+        "worst_value": 0.5422,
+        "best_group": "55-64",
+        "best_value": 0.1565,
+        "groups_judged": 6,
+        "groups_too_small": []
+      },
+      "false_positive_rate": {
+        "gap_pts": 30.26,
+        "worst_group": "18-25",
+        "worst_value": 0.4559,
+        "best_group": "55-64",
+        "best_value": 0.1533,
+        "groups_judged": 6,
+        "groups_too_small": []
+      },
+      "recall": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 0,
+        "groups_too_small": [
+          "18-25",
+          "26-34",
+          "35-44",
+          "45-54",
+          "55-64",
+          "65+"
+        ]
+      },
+      "precision": {
+        "gap_pts": 8.89,
+        "worst_group": "26-34",
+        "worst_value": 0.2222,
+        "best_group": "18-25",
+        "best_value": 0.3111,
+        "groups_judged": 4,
+        "groups_too_small": [
+          "55-64",
+          "65+"
+        ]
+      }
+    },
+    "coverage_tier": {
+      "selection_rate": {
+        "gap_pts": 16.8,
+        "worst_group": "EE",
+        "worst_value": 0.3988,
+        "best_group": "ES",
+        "best_value": 0.2308,
+        "groups_judged": 4,
+        "groups_too_small": []
+      },
+      "false_positive_rate": {
+        "gap_pts": 16.63,
+        "worst_group": "EE",
+        "worst_value": 0.3555,
+        "best_group": "ES",
+        "best_value": 0.1892,
+        "groups_judged": 4,
+        "groups_too_small": []
+      },
+      "recall": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "EC",
+          "EF",
+          "ES"
+        ]
+      },
+      "precision": {
+        "gap_pts": 10.29,
+        "worst_group": "EE",
+        "worst_value": 0.2015,
+        "best_group": "EF",
+        "best_value": 0.3043,
+        "groups_judged": 4,
+        "groups_too_small": []
+      }
+    },
+    "is_vip": {
+      "selection_rate": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "True"
+        ]
+      },
+      "false_positive_rate": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "True"
+        ]
+      },
+      "recall": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "True"
+        ]
+      },
+      "precision": {
+        "gap_pts": null,
+        "worst_group": null,
+        "worst_value": null,
+        "best_group": null,
+        "best_value": null,
+        "groups_judged": 1,
+        "groups_too_small": [
+          "True"
+        ]
+      }
+    }
+  },
+  "flags": [],
+  "per_slice_metrics": [
+    {
+      "slice": "state",
+      "group": "AZ",
+      "count": 31,
+      "positives": 3,
+      "negatives": 28,
+      "predicted_positive": 7,
+      "tp": 2,
+      "fp": 5,
+      "fn": 1,
+      "tn": 23,
+      "base_rate": 0.0968,
+      "selection_rate": 0.2258,
+      "false_positive_rate": 0.1786,
+      "recall": 0.6667,
+      "precision": 0.2857,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "CA",
+      "count": 149,
+      "positives": 17,
+      "negatives": 132,
+      "predicted_positive": 57,
+      "tp": 8,
+      "fp": 49,
+      "fn": 9,
+      "tn": 83,
+      "base_rate": 0.1141,
+      "selection_rate": 0.3826,
+      "false_positive_rate": 0.3712,
+      "recall": 0.4706,
+      "precision": 0.1404,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "CO",
+      "count": 15,
+      "positives": 1,
+      "negatives": 14,
+      "predicted_positive": 5,
+      "tp": 1,
+      "fp": 4,
+      "fn": 0,
+      "tn": 10,
+      "base_rate": 0.0667,
+      "selection_rate": 0.3333,
+      "false_positive_rate": 0.2857,
+      "recall": 1.0,
+      "precision": 0.2,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "ID",
+      "count": 16,
+      "positives": 0,
+      "negatives": 16,
+      "predicted_positive": 6,
+      "tp": 0,
+      "fp": 6,
+      "fn": 0,
+      "tn": 10,
+      "base_rate": 0.0,
+      "selection_rate": 0.375,
+      "false_positive_rate": 0.375,
+      "recall": null,
+      "precision": 0.0,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "NV",
+      "count": 25,
+      "positives": 4,
+      "negatives": 21,
+      "predicted_positive": 5,
+      "tp": 2,
+      "fp": 3,
+      "fn": 2,
+      "tn": 18,
+      "base_rate": 0.16,
+      "selection_rate": 0.2,
+      "false_positive_rate": 0.1429,
+      "recall": 0.5,
+      "precision": 0.4,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "NY",
+      "count": 7,
+      "positives": 0,
+      "negatives": 7,
+      "predicted_positive": 1,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "tn": 6,
+      "base_rate": 0.0,
+      "selection_rate": 0.1429,
+      "false_positive_rate": 0.1429,
+      "recall": null,
+      "precision": 0.0,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "OR",
+      "count": 347,
+      "positives": 57,
+      "negatives": 290,
+      "predicted_positive": 136,
+      "tp": 43,
+      "fp": 93,
+      "fn": 14,
+      "tn": 197,
+      "base_rate": 0.1643,
+      "selection_rate": 0.3919,
+      "false_positive_rate": 0.3207,
+      "recall": 0.7544,
+      "precision": 0.3162,
+      "flagged_metrics": [],
+      "too_small_for": []
+    },
+    {
+      "slice": "state",
+      "group": "TX",
+      "count": 20,
+      "positives": 0,
+      "negatives": 20,
+      "predicted_positive": 7,
+      "tp": 0,
+      "fp": 7,
+      "fn": 0,
+      "tn": 13,
+      "base_rate": 0.0,
+      "selection_rate": 0.35,
+      "false_positive_rate": 0.35,
+      "recall": null,
+      "precision": 0.0,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "UT",
+      "count": 22,
+      "positives": 1,
+      "negatives": 21,
+      "predicted_positive": 7,
+      "tp": 0,
+      "fp": 7,
+      "fn": 1,
+      "tn": 14,
+      "base_rate": 0.0455,
+      "selection_rate": 0.3182,
+      "false_positive_rate": 0.3333,
+      "recall": 0.0,
+      "precision": 0.0,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "state",
+      "group": "WA",
+      "count": 68,
+      "positives": 8,
+      "negatives": 60,
+      "predicted_positive": 22,
+      "tp": 6,
+      "fp": 16,
+      "fn": 2,
+      "tn": 44,
+      "base_rate": 0.1176,
+      "selection_rate": 0.3235,
+      "false_positive_rate": 0.2667,
+      "recall": 0.75,
+      "precision": 0.2727,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "1-9",
+      "count": 63,
+      "positives": 4,
+      "negatives": 59,
+      "predicted_positive": 21,
+      "tp": 3,
+      "fp": 18,
+      "fn": 1,
+      "tn": 41,
+      "base_rate": 0.0635,
+      "selection_rate": 0.3333,
+      "false_positive_rate": 0.3051,
+      "recall": 0.75,
+      "precision": 0.1429,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "10-24",
+      "count": 158,
+      "positives": 11,
+      "negatives": 147,
+      "predicted_positive": 39,
+      "tp": 7,
+      "fp": 32,
+      "fn": 4,
+      "tn": 115,
+      "base_rate": 0.0696,
+      "selection_rate": 0.2468,
+      "false_positive_rate": 0.2177,
+      "recall": 0.6364,
+      "precision": 0.1795,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "100-249",
+      "count": 290,
+      "positives": 52,
+      "negatives": 238,
+      "predicted_positive": 124,
+      "tp": 37,
+      "fp": 87,
+      "fn": 15,
+      "tn": 151,
+      "base_rate": 0.1793,
+      "selection_rate": 0.4276,
+      "false_positive_rate": 0.3655,
+      "recall": 0.7115,
+      "precision": 0.2984,
+      "flagged_metrics": [],
+      "too_small_for": []
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "25-49",
+      "count": 112,
+      "positives": 12,
+      "negatives": 100,
+      "predicted_positive": 40,
+      "tp": 6,
+      "fp": 34,
+      "fn": 6,
+      "tn": 66,
+      "base_rate": 0.1071,
+      "selection_rate": 0.3571,
+      "false_positive_rate": 0.34,
+      "recall": 0.5,
+      "precision": 0.15,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "250+",
+      "count": 53,
+      "positives": 6,
+      "negatives": 47,
+      "predicted_positive": 17,
+      "tp": 5,
+      "fp": 12,
+      "fn": 1,
+      "tn": 35,
+      "base_rate": 0.1132,
+      "selection_rate": 0.3208,
+      "false_positive_rate": 0.2553,
+      "recall": 0.8333,
+      "precision": 0.2941,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "group_size_bucket",
+      "group": "50-99",
+      "count": 24,
+      "positives": 6,
+      "negatives": 18,
+      "predicted_positive": 12,
+      "tp": 4,
+      "fp": 8,
+      "fn": 2,
+      "tn": 10,
+      "base_rate": 0.25,
+      "selection_rate": 0.5,
+      "false_positive_rate": 0.4444,
+      "recall": 0.6667,
+      "precision": 0.3333,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "18-25",
+      "count": 83,
+      "positives": 15,
+      "negatives": 68,
+      "predicted_positive": 45,
+      "tp": 14,
+      "fp": 31,
+      "fn": 1,
+      "tn": 37,
+      "base_rate": 0.1807,
+      "selection_rate": 0.5422,
+      "false_positive_rate": 0.4559,
+      "recall": 0.9333,
+      "precision": 0.3111,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "26-34",
+      "count": 140,
+      "positives": 17,
+      "negatives": 123,
+      "predicted_positive": 72,
+      "tp": 16,
+      "fp": 56,
+      "fn": 1,
+      "tn": 67,
+      "base_rate": 0.1214,
+      "selection_rate": 0.5143,
+      "false_positive_rate": 0.4553,
+      "recall": 0.9412,
+      "precision": 0.2222,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "35-44",
+      "count": 139,
+      "positives": 25,
+      "negatives": 114,
+      "predicted_positive": 58,
+      "tp": 18,
+      "fp": 40,
+      "fn": 7,
+      "tn": 74,
+      "base_rate": 0.1799,
+      "selection_rate": 0.4173,
+      "false_positive_rate": 0.3509,
+      "recall": 0.72,
+      "precision": 0.3103,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "45-54",
+      "count": 124,
+      "positives": 16,
+      "negatives": 108,
+      "predicted_positive": 38,
+      "tp": 11,
+      "fp": 27,
+      "fn": 5,
+      "tn": 81,
+      "base_rate": 0.129,
+      "selection_rate": 0.3065,
+      "false_positive_rate": 0.25,
+      "recall": 0.6875,
+      "precision": 0.2895,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "55-64",
+      "count": 147,
+      "positives": 10,
+      "negatives": 137,
+      "predicted_positive": 23,
+      "tp": 2,
+      "fp": 21,
+      "fn": 8,
+      "tn": 116,
+      "base_rate": 0.068,
+      "selection_rate": 0.1565,
+      "false_positive_rate": 0.1533,
+      "recall": 0.2,
+      "precision": 0.087,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "age_band",
+      "group": "65+",
+      "count": 67,
+      "positives": 8,
+      "negatives": 59,
+      "predicted_positive": 17,
+      "tp": 1,
+      "fp": 16,
+      "fn": 7,
+      "tn": 43,
+      "base_rate": 0.1194,
+      "selection_rate": 0.2537,
+      "false_positive_rate": 0.2712,
+      "recall": 0.125,
+      "precision": 0.0588,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "coverage_tier",
+      "group": "EC",
+      "count": 116,
+      "positives": 16,
+      "negatives": 100,
+      "predicted_positive": 43,
+      "tp": 12,
+      "fp": 31,
+      "fn": 4,
+      "tn": 69,
+      "base_rate": 0.1379,
+      "selection_rate": 0.3707,
+      "false_positive_rate": 0.31,
+      "recall": 0.75,
+      "precision": 0.2791,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "coverage_tier",
+      "group": "EE",
+      "count": 336,
+      "positives": 35,
+      "negatives": 301,
+      "predicted_positive": 134,
+      "tp": 27,
+      "fp": 107,
+      "fn": 8,
+      "tn": 194,
+      "base_rate": 0.1042,
+      "selection_rate": 0.3988,
+      "false_positive_rate": 0.3555,
+      "recall": 0.7714,
+      "precision": 0.2015,
+      "flagged_metrics": [],
+      "too_small_for": []
+    },
+    {
+      "slice": "coverage_tier",
+      "group": "EF",
+      "count": 118,
+      "positives": 21,
+      "negatives": 97,
+      "predicted_positive": 46,
+      "tp": 14,
+      "fp": 32,
+      "fn": 7,
+      "tn": 65,
+      "base_rate": 0.178,
+      "selection_rate": 0.3898,
+      "false_positive_rate": 0.3299,
+      "recall": 0.6667,
+      "precision": 0.3043,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "coverage_tier",
+      "group": "ES",
+      "count": 130,
+      "positives": 19,
+      "negatives": 111,
+      "predicted_positive": 30,
+      "tp": 9,
+      "fp": 21,
+      "fn": 10,
+      "tn": 90,
+      "base_rate": 0.1462,
+      "selection_rate": 0.2308,
+      "false_positive_rate": 0.1892,
+      "recall": 0.4737,
+      "precision": 0.3,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "recall"
+      ]
+    },
+    {
+      "slice": "is_vip",
+      "group": "False",
+      "count": 699,
+      "positives": 91,
+      "negatives": 608,
+      "predicted_positive": 253,
+      "tp": 62,
+      "fp": 191,
+      "fn": 29,
+      "tn": 417,
+      "base_rate": 0.1302,
+      "selection_rate": 0.3619,
+      "false_positive_rate": 0.3141,
+      "recall": 0.6813,
+      "precision": 0.2451,
+      "flagged_metrics": [],
+      "too_small_for": []
+    },
+    {
+      "slice": "is_vip",
+      "group": "True",
+      "count": 1,
+      "positives": 0,
+      "negatives": 1,
+      "predicted_positive": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "base_rate": 0.0,
+      "selection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "recall": null,
+      "precision": null,
+      "flagged_metrics": [],
+      "too_small_for": [
+        "false_positive_rate",
+        "recall"
+      ]
+    }
+  ],
+  "ranking": [
+    "logistic_regression_reweighed",
+    "logistic_regression",
+    "random_forest",
+    "lightgbm"
+  ],
+  "candidates": {
+    "logistic_regression": {
+      "base_model": "logistic_regression",
+      "mitigation": null,
+      "model_dir": "models/candidates/logistic_regression",
+      "threshold": 0.5297,
+      "validation": {
+        "pr_auc": 0.2249,
+        "roc_auc": 0.6651,
+        "precision": 0.2128,
+        "recall": 0.5839,
+        "f1": 0.3119,
+        "passed": false,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 31.0,
+            "slice": "group_size_bucket",
+            "group": "50-99"
+          },
+          "recall": {
+            "gap_pts": 1.43,
+            "slice": "state",
+            "group": "OR"
+          }
+        },
+        "n_tests": 28,
+        "flags": [
+          {
+            "slice": "state",
+            "group": "WA",
+            "metric": "false_positive_rate",
+            "value": 0.6296,
+            "overall": 0.3264,
+            "gap_pts": 30.3279,
+            "support": 108,
+            "p_value": 0.0
+          },
+          {
+            "slice": "group_size_bucket",
+            "group": "50-99",
+            "metric": "false_positive_rate",
+            "value": 0.6364,
+            "overall": 0.3264,
+            "gap_pts": 31.0013,
+            "support": 55,
+            "p_value": 0.0
+          }
+        ]
+      },
+      "test": {
+        "pr_auc": 0.3509,
+        "roc_auc": 0.7139,
+        "precision": 0.2368,
+        "recall": 0.6923,
+        "f1": 0.3529,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 16.67,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 0.0,
+            "slice": "is_vip",
+            "group": "False"
+          }
+        },
+        "n_tests": 23,
+        "flags": []
+      }
+    },
+    "random_forest": {
+      "base_model": "random_forest",
+      "mitigation": null,
+      "model_dir": "models/candidates/random_forest",
+      "threshold": 0.4761,
+      "validation": {
+        "pr_auc": 0.2154,
+        "roc_auc": 0.6777,
+        "precision": 0.2312,
+        "recall": 0.6058,
+        "f1": 0.3347,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 16.87,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 0.58,
+            "slice": "age_band",
+            "group": "35-44"
+          }
+        },
+        "n_tests": 28,
+        "flags": []
+      },
+      "test": {
+        "pr_auc": 0.2289,
+        "roc_auc": 0.6733,
+        "precision": 0.1949,
+        "recall": 0.5824,
+        "f1": 0.292,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 19.92,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 0.0,
+            "slice": "is_vip",
+            "group": "False"
+          }
+        },
+        "n_tests": 23,
+        "flags": []
+      }
+    },
+    "lightgbm": {
+      "base_model": "lightgbm",
+      "mitigation": null,
+      "model_dir": "models/candidates/lightgbm",
+      "threshold": 0.5397,
+      "validation": {
+        "pr_auc": 0.208,
+        "roc_auc": 0.6743,
+        "precision": 0.2308,
+        "recall": 0.5912,
+        "f1": 0.332,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 16.85,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 1.98,
+            "slice": "age_band",
+            "group": "35-44"
+          }
+        },
+        "n_tests": 28,
+        "flags": []
+      },
+      "test": {
+        "pr_auc": 0.2329,
+        "roc_auc": 0.6827,
+        "precision": 0.2117,
+        "recall": 0.6374,
+        "f1": 0.3178,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 17.47,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 0.0,
+            "slice": "is_vip",
+            "group": "False"
+          }
+        },
+        "n_tests": 23,
+        "flags": []
+      }
+    },
+    "logistic_regression_reweighed": {
+      "base_model": "logistic_regression",
+      "mitigation": {
+        "method": "reweighing",
+        "slice": "state",
+        "base_model": "logistic_regression",
+        "train_rows": 2963,
+        "effective_n": 2928.0,
+        "effective_share": 0.9882,
+        "weight_min": 0.6311,
+        "weight_max": 2.8458,
+        "train_denial_gap_before_pts": 11.32,
+        "train_denial_gap_after_pts": 0.0,
+        "train_denial_rate_by_group": {
+          "NY": {
+            "n": 55,
+            "before": 0.1455,
+            "after": 0.0918
+          },
+          "WA": {
+            "n": 334,
+            "before": 0.1407,
+            "after": 0.0918
+          },
+          "NV": {
+            "n": 78,
+            "before": 0.1154,
+            "after": 0.0918
+          },
+          "OR": {
+            "n": 1358,
+            "before": 0.0979,
+            "after": 0.0918
+          },
+          "CA": {
+            "n": 489,
+            "before": 0.0818,
+            "after": 0.0918
+          },
+          "TX": {
+            "n": 196,
+            "before": 0.0663,
+            "after": 0.0918
+          },
+          "CO": {
+            "n": 83,
+            "before": 0.0602,
+            "after": 0.0918
+          },
+          "ID": {
+            "n": 134,
+            "before": 0.0597,
+            "after": 0.0918
+          },
+          "UT": {
+            "n": 112,
+            "before": 0.0446,
+            "after": 0.0918
+          },
+          "AZ": {
+            "n": 124,
+            "before": 0.0323,
+            "after": 0.0918
+          }
+        }
+      },
+      "model_dir": "models_mitigated/candidates/logistic_regression_reweighed",
+      "threshold": 0.5305,
+      "validation": {
+        "pr_auc": 0.23,
+        "roc_auc": 0.6647,
+        "precision": 0.2222,
+        "recall": 0.6131,
+        "f1": 0.3262,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 16.91,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 4.35,
+            "slice": "state",
+            "group": "OR"
+          }
+        },
+        "n_tests": 28,
+        "flags": []
+      },
+      "test": {
+        "pr_auc": 0.3248,
+        "roc_auc": 0.7044,
+        "precision": 0.2451,
+        "recall": 0.6813,
+        "f1": 0.3605,
+        "passed": true,
+        "worst_gap_pts": {
+          "false_positive_rate": {
+            "gap_pts": 14.23,
+            "slice": "age_band",
+            "group": "18-25"
+          },
+          "recall": {
+            "gap_pts": 0.0,
+            "slice": "is_vip",
+            "group": "False"
+          }
+        },
+        "n_tests": 23,
+        "flags": []
+      }
+    }
+  },
+  "mlflow_run_id": "297cb63ec60e4b40b0abc58187aee36a"
+}

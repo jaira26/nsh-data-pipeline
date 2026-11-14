@@ -237,5 +237,6 @@ reports/injected/
 /models
 /models_mitigated
 mlflow.db
+mlflow_*.db
 mlruns/
 mlartifacts/
