@@ -116,3 +116,34 @@ stages:
       - models                      # candidates/<name>/ + best/ (model.joblib + metadata.json)
       - reports/model/training:     # candidates.json, comparison charts, tuning trials
           cache: false
+
+  # Phase 2 (Het): fairness audit of every candidate (validation + test, per slice), reweighing for candidates
+  # that fail, fairness-aware final selection -> reports/model/bias.json (selected_model, selected_model_dir,
+  # passed). Exit code 1 = no candidate is fair enough, so `dvc repro` and CI stop before the registry.
+  # Named model_bias because `bias` is the phase-1 data-bias stage. See docs/model_bias.md.
+  model_bias:
+    cmd: python -m nsh_pipeline.modeling.fairness --params params.yaml --data-dir data/training --models-dir models --out-dir reports/model
+    deps:
+      - data/training
+      - models
+      - src/nsh_pipeline/bias/metrics.py
+      - src/nsh_pipeline/bias/mitigation.py
+      - src/nsh_pipeline/modeling/candidates.py
+      - src/nsh_pipeline/modeling/select.py
+      - src/nsh_pipeline/modeling/fairness.py
+      - src/nsh_pipeline/modeling/fairness_metrics.py
+      - src/nsh_pipeline/modeling/fairness_mitigation.py
+      - src/nsh_pipeline/modeling/fairness_report.py
+    params:
+      - model_bias
+      - model.seed
+      - model.selection_metric
+      - model.mlflow
+      - inject_issues            # the report checks the planted denial_skew when injection is on
+    metrics:
+      - reports/model/bias.json:
+          cache: false
+    outs:
+      - reports/model/bias:      # bias_report.md, slice_metrics.csv, charts
+          cache: false
+      - models_mitigated         # <name>_reweighed/ model.joblib + metadata.json (same contract as models/)
