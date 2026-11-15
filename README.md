@@ -593,9 +593,12 @@ Full list: [docs/decisions.md](docs/decisions.md).
 | Preprocessing | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `preprocess/` |
 | Training data (phase 2) | Jairaghavendra Sridhar ([@jaira26](https://github.com/jaira26)) | `modeling/{dataset,features,split,build}.py`, release `data-v1.1`, `denial_model`, training sample fixture |
 | Validation, statistics, anomalies & alerts | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `validation/`, `utils/alerts.py` |
+| Model validation & sensitivity analysis (phase 2) | Raj Mehta ([@rtm2191](https://github.com/rtm2191)) | `modeling/{evaluate,sensitivity,validation_plots}.py`, validation gate, SHAP, hyperparameter sensitivity |
 | Orchestration, versioning & infrastructure | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `dags/`, Docker, `dvc.yaml`, `orchestration/` |
 | Model training, tuning, selection & MLflow (phase 2) | Kalpan Shah ([@Kalpan1104](https://github.com/Kalpan1104)) | `modeling/{candidates,tune,train,select,tracking,artifacts,charts}.py`, MLflow server |
 | Testing framework, bias & documentation | Het Prajapati ([@Het415](https://github.com/Het415)), Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `tests/` setup, CI, `bias/`, README, `docs/` |
+| Model bias, mitigation & fairness-aware selection (phase 2) | Het Prajapati ([@Het415](https://github.com/Het415)) | `modeling/{fairness,fairness_metrics,fairness_mitigation,fairness_report}.py`, `model_bias` stage, `bias.json` |
+| Model registry, rollback, CI/CD, Docker & alerts (phase 2) | Hiral Hitesh Rana ([@HiralR2931](https://github.com/HiralR2931)) | `registry/`, `register` stage, `Dockerfile.train`, `.github/workflows/train.yml`, GCP Artifact Registry |
 
 ---
 
